@@ -73,13 +73,37 @@ Due to following changes (on the tag syntax) a new major version number is requi
 
 2. The default extension for tag files is `htm` or `html` because HTML is the actual syntax of writing tags.
 
-3. No IE8 support. This made it possible to remove all the hacks from code.
+3. No IE8 support == hack free code.
 
 4. No support for server side rendering. I haven't seen a succesfull isomorphic application so far. We can make this if there is a real need.
 
-5. No `<style>` tags. I never liked this personally, but I can probably change my mind.
+5. `preventDefault` is not called by default
 
-6. Observable is replaced with "mount" and "unmount" DOM events as well as `onmount` and `onunmount` instance methods.
 
-7. `preventDefault` is not called by default
+## Questions
+
+1. Do we need `observable`? Can it be replaced with custom DOM events and `onmount`/`onunmount` instance methods.
+
+2. What pre-processors are needed: TypeScript, ES6 ...?
+
+3. Do we need the loop index variable? ie. the `i` on `{ item, i on items }`. It's doable but complex since it must be re-calculated on every change in the array.
+
+
+## Roadmap
+Not yet done, but required for a release.
+
+1. Simple and solid nested loops as well as handling of complex combinations of `if` and `each`. These make the core architecture that everything else is tied to.
+
+2. Nested `<style>` tags.
+
+3. The `<yield>` tag.
+
+4. Object loops.
+
+5. Compiler support for mixed JS and (multiple) tags
+
+6. A test suite. I'd like to see a lot of small unit tests since the codebase is split into many small functions. Separate suites for node (quick) and phantom.
+
+7. Split into projects: compiler, cli, demo and riot.
+
 
