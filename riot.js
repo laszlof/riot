@@ -521,8 +521,10 @@ function _each(dom, parent, expr) {
     .on('update', function () {
       var items = tmpl(expr.val, parent)
 
+      if (!items) return
+
       // object loop. any changes cause full redraw
-      if (!isArray(items)) {
+      if (('' + items.constructor).indexOf('Object') >= 0) {
 
         checksum = items ? JSON.stringify(items) : ''
 
@@ -884,7 +886,7 @@ function setEventHandler(name, handler, dom, tag) {
       }
 
     // cross browser event fix
-    e = e || window.event
+    e = e || window.event || {}
 
     // ignore error on some browsers
     try {
