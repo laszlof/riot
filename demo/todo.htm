@@ -1,0 +1,38 @@
+
+<todo>
+
+  <h2>{ title }</h2>
+
+  <form onsubmit={ add }>
+    <input type="text" autofocus placeholder="Example: buy bread">
+    <button>Add { getLabel(items.length) } task</button>
+  </form>
+
+  <p each={ item in items }>
+    { item }
+    <a onclick={ remove } title="Remove task">&times;</a>
+  </p>
+
+  <script>
+    this.items = opts.items || []
+    this.title = opts.title
+
+    getLabel(am) {
+      return ['first', 'second', 'third', 'fourth'][am] || 'a'
+    }
+
+    add(e) {
+      e.preventDefault()
+      var input = e.target[0]
+      if (input.value) {
+        this.items.unshift(input.value)
+        input.value = ''
+      }
+    }
+
+    remove(e, item) {
+      this.items.remove(item)
+    }
+  </script>
+
+</todo>

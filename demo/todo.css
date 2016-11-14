@@ -1,0 +1,62 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Avenir Next', 'Myriad Pro', sans-serif;
+  background-color: #f9f9f9;
+  color: #555;
+}
+
+form {
+  white-space: nowrap;
+  margin-bottom: 2em;
+}
+
+todo {
+  box-shadow: 0 1px .2em #ddd;
+  background-color: #fff;
+  max-width: 25em;
+  margin: 5% auto;
+  display: block;
+  padding: 2em;
+}
+
+h2 {
+  font-weight: normal;
+  margin: 0 0 .5em;
+}
+
+p {
+  border-bottom: 1px solid #ddd;
+  text-transform: capitalize;
+  padding: .2em 0;
+}
+
+a {
+  font-size: 160%;
+  cursor: pointer;
+  line-height: 1;
+  float: right;
+  color: #ccc;
+}
+
+a:hover {
+  color: red;
+}
+
+[type=text] {
+  font-size: 100%;
+  padding: .4em .6em;
+}
+
+button {
+  background-color: #20aef5;
+  border-radius: 5em;
+  padding: .6em 1em;
+  font-size: 90%;
+  cursor: pointer;
+  color: #fff;
+  border: 0;
+}

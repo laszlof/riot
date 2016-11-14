@@ -1,89 +1,18 @@
 {
   "name": "riot",
-  "version": "2.2.4",
-  "description": "A React-like user interface micro-library",
-  "homepage": "http://riotjs.com/",
-  "repository": "riot/riot",
-  "author": "Muut, Inc. and other contributors",
+  "description": "Minimal web components.",
+  "bin": "compiler/cli",
+  "version": "0.0.1",
   "license": "MIT",
-  "scripts": {
-    "test": "make riot"
+  "main": "riot",
+
+  "directories": {
+    "lib": "lib"
   },
-  "keywords": [
-    "custom tags",
-    "custom elements",
-    "web components",
-    "virtual dom",
-    "shadow dom",
-    "polymer",
-    "react",
-    "jsx",
-    "minimal",
-    "minimalist",
-    "client-side",
-    "framework",
-    "declarative",
-    "templating",
-    "template",
-    "data binding",
-    "mvc",
-    "router",
-    "model",
-    "view",
-    "controller",
-    "riotjs",
-    "riot.js"
-  ],
-  "dependencies": {
-    "chalk": "^1.1.1",
-    "chokidar": "~1.0.6",
-    "minimist": "~1.2.0",
-    "riot-observable": "^2.3.0-beta",
-    "riot-route": "^2.3.0-beta.3",
-    "riot-tmpl": "2.0.0-beta.2",
-    "shelljs": "~0.5.3",
-    "simple-dom": "0.2.7",
-    "simple-html-tokenizer": "^0.2.0"
-  },
-  "devDependencies": {
-    "cheerio": "^0.19.0",
-    "coveralls": "^2.11.4",
-    "eslint": "^1.5.0",
-    "expect.js": "^0.3.1",
-    "glob": "^5.0.14",
-    "jsdom": "^6.5.1",
-    "karma": "^0.13.9",
-    "karma-coverage": "^0.5.2",
-    "karma-mocha": "^0.2.0",
-    "karma-phantomjs-launcher": "^0.2.1",
-    "karma-sauce-launcher": "^0.2.14",
-    "mocha": "^2.3.2",
-    "smash": "0.0.14",
-    "uglify-js": "latest"
-  },
-  "preferGlobal": true,
-  "files": [
-    "lib",
-    "riot.js",
-    "riot.min.js",
-    "compiler.js",
-    "compiler.min.js",
-    "riot+compiler.js",
-    "riot+compiler.min.js"
-  ],
-  "bin": {
-    "riot": "lib/server/cli.js"
-  },
-  "main": "lib/server/index.js",
-  "browser": "riot.js",
-  "spm": {
-    "main": "riot.js",
-    "ignore": [
-      "demo",
-      "doc",
-      "test",
-      "lib",
-      "make"
-    ]
+
+  "repository": {
+    "url": "https://github.com/riot/riot",
+    "type": "git"
   }
+
 }

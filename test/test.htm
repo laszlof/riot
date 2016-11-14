@@ -1,0 +1,47 @@
+
+<test-tag>
+
+  <h2 class={ thin: thin } onclick={ toggle }>{ format(title) }</h2>
+  <p if={ !hide }>This is a desc</p>
+
+  <section each={ thread in threads } onclick={ remove }>
+    <h3>{ title } / { thread.title }</h3>
+    <time onclick={ setState(thread.title) }>{ thread.date }</time>
+  </section>
+
+  <button onclick={ add } if={ !hide }>Push</button>
+
+  <foo each={ thread in threads } onclick={ remove }/>
+
+  <script>
+    var items = this.threads = [
+      { title: 'Firsti', date: 20928 },
+      { title: 'Second', date: 20928 },
+      { title: 'Thirdi', date: 20928 }
+    ]
+    this.title = 'This is a title'
+
+    format(title) {
+      return title.toUpperCase()
+    }
+
+    toggle() {
+      this.thin = !this.thin
+      this.hide = !this.hide
+    }
+
+    setState() {
+      console.info(arguments)
+    }
+
+    add() {
+      items.unshift({ title: 'Added', date: Math.random() })
+    }
+
+    remove(e, item) {
+      items.remove(item)
+    }
+
+  </script>
+
+</test-tag>

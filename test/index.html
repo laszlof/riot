@@ -1,0 +1,14 @@
+
+<script src="../riot.js"></script>
+<script src="test.js"></script>
+<style>.thin {font-weight: normal;}</style>
+
+<div id="test"></div>
+
+<script>
+  riot.tag('foo', '<foo><h3>$0</h3></foo>', [ function() { return Math.random() } ], function() {
+    console.info('INITIALIZED')
+  })
+
+  var tag = riot.mount('test-tag', test, { body: 'Something <h2>Strong</h2>' })
+</script>
