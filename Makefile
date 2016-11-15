@@ -13,4 +13,7 @@ riot:
 	@echo "}()" >> riot.js
 	@echo wrote riot.js
 
+min: riot
+	uglifyjs riot.js --mangle > riot.min.js
+
 .PHONY: test demo

@@ -1,18 +1,23 @@
 
 <test-tag>
 
-  <!-- tag "owns" inner loops -->
-  <div each={ thread in threads } onclick={ remove }>
-    <h3>{ thread.title }</h3>
+  <h2 class={ thin: thin } onclick={ toggle }>
+    { format(title) }
+  </h2>
 
-    <b each={ tag in thread.tags } class="tag">
-      { tag }
-    </b>
+  <div if={ !hide }>
+    This is a desc, but <b>{ console.info('here') || title }</b>
+
+    <div each={ thread in threads }>
+      <h3 onclick={ remove }>{ thread.title }</h3>
+
+      <b each={ tag in thread.tags } class="tag" onclick={ removeTag(thread) }>
+        { tag }
+      </b>
+    </div>
+
   </div>
-
   <!--
-  <h2 class={ thin: thin } onclick={ toggle }>{ format(title) }</h2>
-  <p if={ !hide }>This is a desc</p>
 
   <section each={ thread in threads } onclick={ remove }>
     <h3>{ title } / { thread.title }</h3>
@@ -31,6 +36,7 @@
       { title: 'Thirdi', date: 20928, tags: ['dog', 'drug'] }
     ]
     this.title = 'This is a title'
+    this.hide = true
 
     format(title) {
       return title.toUpperCase()
@@ -51,6 +57,10 @@
 
     remove(e, item) {
       items.remove(item)
+    }
+
+    removeTag(e, item) {
+      console.info(arguments)
     }
 
   </script>

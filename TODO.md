@@ -1,8 +1,10 @@
 
 # TODO
-- no loop index variable?
-- nested loops
+- if: both expressions & body
 - each and if together
+
+
+- no loop index variable?
 - root attributes
 - multi tag / js compiler
 - object loop (re-render with `.update(true)`)

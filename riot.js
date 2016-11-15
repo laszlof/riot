@@ -2,22 +2,38 @@
 
 function Block(tag, fns, root, item) {
 
-  var loops = [],
+  var ifs = [],
+    loops = [],
     expr = []
 
   this.update = function() {
     each(expr, function(fn) {
       fn.call(tag, item)
     })
+
+    each(ifs, function(clause) {
+      clause.update()
+    })
   }
 
-
+  // extract expressions, loops and conditionals for later execution
   walk(root, function(node) {
-    var name = getTagName(node)
 
+    // if
+    attr = remAttr(node, 'if')
+    var cond = getFunction(attr)
+
+    if (cond) { ifs.push(new IF(node, tag, cond, item)); return false }
+
+    // each
+    var attr = remAttr(node, 'each'), query = getFunction(attr)
+    if (query) { loops.push([query, node]); return false }
+
+    // custom tag
+    var name = getTagName(node)
     if (node != tag.root && isCustom(name)) return riot.mount(name, node, item)
 
-    // body expression
+    // body
     var fn = getFunction(node.nodeValue)
 
     fn && expr.push(function() {
@@ -26,17 +42,6 @@ function Block(tag, fns, root, item) {
       else node.nodeValue = toValue(val)
     })
 
-    if (!name) return
-
-    // each
-    var attr = remAttr(node, 'each'),
-      query = getFunction(attr)
-
-    if (query) { loops.push([query, node]); return false }
-
-    // if
-    var attr = remAttr(node, 'if')
-    if (attr) IF(attr, node, tag, fns)
 
     // rest of the attributes
     parseAttributes(node)
@@ -89,7 +94,7 @@ function Block(tag, fns, root, item) {
         setEventHandler(node, name, fn)
 
       } else {
-        expr.push(function(tag) {
+        expr.push(function() {
           var val = fn.call(tag, item)
           attr.value = toValue(val)
         })
@@ -111,9 +116,14 @@ function each(arr, fn) {
   }
 }
 
+function insertBefore(node, new_node) {
+  node.parentNode.insertBefore(new_node, node)
+  return new_node
+}
+
 // get and remove attribute.
 function remAttr(node, name) {
-  var attr = node.getAttribute(name)
+  var attr = node.tagName && node.getAttribute(name)
   if (attr) {
     node.removeAttribute(name)
     return attr
@@ -189,32 +199,24 @@ function toValue(val) {
 
 
 // makes a root node mountable
-function IF(cond, root, tag, fns) {
-  var stub
+function IF(node, tag, fn, item) {
 
-  root.test = function() {
-    var fn = getFunction(cond, fns)
-    return fn && fn.call(tag)
+  // invisible marker node
+  var stub = insertBefore(node, document.createTextNode('')),
+    parent = node.parentNode,
+    mounted
+
+  this.update = function() {
+    return fn.call(tag, item) ? mount() : unmount()
   }
 
-  root.unmount = function() {
-    var parent = root.parentNode
-
-    if (parent) {
-      stub = document.createTextNode('')
-      parent.replaceChild(stub, root)
-      stub.unmount = root.unmount
-      stub.mount = root.mount
-      stub.test = root.test
-      return stub
-    }
+  function unmount() {
+    parent && parent.removeChild(node)
   }
 
-  root.mount = function() {
-    if (stub) {
-      var parent = stub.parentNode
-      parent && parent.replaceChild(root, stub)
-    }
+  function mount() {
+    !mounted && tag.addBlock(node, item)
+    insertBefore(stub, node)
   }
 
 }
@@ -225,17 +227,16 @@ function Loop(query, node, tag, fns, item) {
 
   if (!items) return
 
-  var start = document.createTextNode(''),
-    last = node.previousSibling,
-    nodes = []
 
   // insert hidden start node as marker
-  last.parentNode.insertBefore(start, last)
+  var last = node.previousSibling,
+    start = insertBefore(last, document.createTextNode('')),
+    nodes = []
 
 
   function add(obj, sibling) {
     var el = node.cloneNode(true)
-    sibling.parentNode.insertBefore(el, sibling)
+    insertBefore(sibling, el)
     return el
   }
 
@@ -384,9 +385,6 @@ function Tag(tag_name, html, fns, impl, opts) {
 
     /*
 
-    // nodes to be mounted / unmounted
-    var mountables = []
-
     // walk trough nodes and update them
     walk(root, function(node) {
       if (node == root) return
@@ -395,22 +393,11 @@ function Tag(tag_name, html, fns, impl, opts) {
         is_custom = isCustom(name),
         tag = node.__tag
 
-      // conditional
-      if (node.test) {
-        var flag = node.test()
-        var el = tag || !is_custom && node
-        el && mountables.push(flag ? el.mount : el.unmount)
-        if (!flag) return false
-      }
-
       // custom tag
       if (tag) tag.update()
       else if (is_custom) riot.mount(name, node)
 
     })
-
-    // mount / unmount
-    each(mountables, function(fn) { fn() })
 
     */
 

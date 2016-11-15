@@ -1,4 +1,11 @@
 
+# Riot experimental branch
+
+This is a rewrite of Riot. An attempt to make a solid architecture that can be easily extended without hacks. It solves big issues while keeping things small.
+
+**NOTE:** This branch is currently broken and cannot be used anywhere. Not even pull requests are welcome at this point since things are changing rapidly.
+
+
 ## The story
 
 I've been a long time user of Riot and find it the simples way to build user interfaces. When you write a custom HTML component such as this:
@@ -28,8 +35,6 @@ I hope the above kind of syntax will become the de facto way to write components
 Given the importance of this project and the roadmap of 3.0 I felt the pressure to take a holistic look of the Riot source. It turned out that some of the concerns are so drastic that the current architecture cannot hold everything together without significant amount of hacks or glue code.
 
 Another thing that caught my eye is the file size of Riot, which seems to grow steadily. It hurts the minimalistic Riot brand as well as makes the project less tempting for contributors. Especially the `each.js` is a growing concern because of the inner complexity.
-
-This is a rewrite of Riot. An attempt to make a solid architecture that can be easily extended without hacks. It solves big issues while keeping things small.
 
 Here's the summary of changes and new features.
 

@@ -2,11 +2,15 @@
 <script src="../riot.js"></script>
 <script src="test.js"></script>
 <style>
+  body { font-family: "avenir next", sans-serif;}
+  test-tag { display: block; margin: 5% auto; max-width: 500px;}
   .thin {font-weight: normal}
   .tag {color: #0ae; margin-right: .5em; }
 </style>
 
-<div id="test"></div>
+<div id="test">
+  <h4>This comes from inside</h4>
+</div>
 
 <script>
   riot.tag('foo', '<foo><h3>$0</h3></foo>', [ function() { return Math.random() } ], function() {
