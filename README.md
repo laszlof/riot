@@ -79,6 +79,7 @@ Due to following changes (on the tag syntax) a new major version number is requi
 
 5. `preventDefault` is not called by default
 
+6. No hacky `eventObject.item` property
 
 ## Questions
 

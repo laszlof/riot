@@ -1,6 +1,16 @@
 
 <test-tag>
 
+  <!-- tag "owns" inner loops -->
+  <div each={ thread in threads } onclick={ remove }>
+    <h3>{ thread.title }</h3>
+
+    <b each={ tag in thread.tags } class="tag">
+      { tag }
+    </b>
+  </div>
+
+  <!--
   <h2 class={ thin: thin } onclick={ toggle }>{ format(title) }</h2>
   <p if={ !hide }>This is a desc</p>
 
@@ -12,12 +22,13 @@
   <button onclick={ add } if={ !hide }>Push</button>
 
   <foo each={ thread in threads } onclick={ remove }/>
+  -->
 
   <script>
     var items = this.threads = [
-      { title: 'Firsti', date: 20928 },
-      { title: 'Second', date: 20928 },
-      { title: 'Thirdi', date: 20928 }
+      { title: 'Firsti', date: 20928, tags: ['cat', 'doggi', 'animal'] },
+      { title: 'Second', date: 20928, tags: ['cat', 'snake', 'lizard'] },
+      { title: 'Thirdi', date: 20928, tags: ['dog', 'drug'] }
     ]
     this.title = 'This is a title'
 

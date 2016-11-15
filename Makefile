@@ -1,11 +1,11 @@
 
 riot=./compiler/cli.js
 
-demo: riot
-	@ $(riot) demo/todo.htm
-
 test: riot
 	@ $(riot) test/test.htm
+
+demo: riot
+	@ $(riot) demo/todo.htm
 
 riot:
 	@echo "!function() {" > riot.js

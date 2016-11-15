@@ -27,6 +27,7 @@ self.parse = function(html) {
   return parser.parse(html)
 }
 
+// walk trough a DOM tree
 self.walk = function(dom, fn, level) {
   if (level == null) level = 0
 
