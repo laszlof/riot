@@ -1,6 +1,6 @@
 {
   "name": "riot",
-  "description": "Minimal web components.",
+  "description": "Simple and elegant component based UI library",
   "bin": "compiler/cli",
   "version": "0.0.1",
   "license": "MIT",

@@ -15,21 +15,16 @@
     { format(title) }
   </h2>
 
-  <inner each={ thread in threads }/>
-
-  <hr>
-
-  <p if={ !hide }>This is a desc, but <b>{ title }</b></p>
-
+  <div each="{ thread in threads }">
+    { thread.title }
+  </div>
 
   <!--
-  <div each={ thread in threads }>
     <h3 onclick={ remove }>{ thread.title }</h3>
 
     <b each={ tag in thread.tags } class="tag" onclick={ removeTag(thread) }>
       { tag }
     </b>
-  </div>
 
   <section each={ thread in threads } onclick={ remove }>
     <h3>{ title } / { thread.title }</h3>
@@ -43,9 +38,9 @@
 
   <script>
     var items = this.threads = [
-      { title: 'Firsti', date: 20928, tags: ['cat', 'doggi', 'animal'] },
+      { title: 'Thirdi', date: 20928, tags: ['cat', 'doggi', 'animal'] },
       { title: 'Second', date: 20928, tags: ['cat', 'snake', 'lizard'] },
-      { title: 'Thirdi', date: 20928, tags: ['dog', 'drug'] }
+      { title: 'Firsti', date: 20928, tags: ['dog', 'drug'] }
     ]
     this.title = 'This is a title'
     this.hide = true
@@ -55,7 +50,8 @@
     }
 
     toggle() {
-      if (items[2]) items = this.threads = [1, 2]
+      // if (items[2]) items = this.threads = [1, 2]
+      items.sort(function(a, b) { return a.title != b.title })
       this.thin = !this.thin
       this.hide = !this.hide
     }

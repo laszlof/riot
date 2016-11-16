@@ -5,20 +5,19 @@ riot.tag('inner', '<inner> <h3>$0</h3> <p>Descrip</p> </inner>',
 function(self, opts) {
 	console.info('INITIALIZED')
 })
-riot.tag('test-tag', '<test-tag> <h2 class="$0" onclick="$1">$2</h2> <inner each="$3"></inner> <hr> <p if="$4">This is a desc, but <b>$5</b></p> </test-tag>',
+riot.tag('test-tag', '<test-tag> <h2 class="$0" onclick="$1">$2</h2> <div each="$3">$4</div> </test-tag>',
 
 [function(){return { thin: this.thin}},
 function(){return this.toggle},
 function(){return this.format(this.title)},
 function(){return this.threads},
-function(){return !this.hide},
-function(thread){return this.title}],
+function(thread){return thread.title}],
 
 function(self, opts) {
 	var items = this.threads = [
-      { title: 'Firsti', date: 20928, tags: ['cat', 'doggi', 'animal'] },
+      { title: 'Thirdi', date: 20928, tags: ['cat', 'doggi', 'animal'] },
       { title: 'Second', date: 20928, tags: ['cat', 'snake', 'lizard'] },
-      { title: 'Thirdi', date: 20928, tags: ['dog', 'drug'] }
+      { title: 'Firsti', date: 20928, tags: ['dog', 'drug'] }
     ]
     this.title = 'This is a title'
     this.hide = true
@@ -28,7 +27,8 @@ function(self, opts) {
     }.bind(this)
 
     this.toggle = function() {
-      if (items[2]) items = this.threads = [1, 2]
+       
+      items.sort(function(a, b) { return a.title != b.title })
       this.thin = !this.thin
       this.hide = !this.hide
     }.bind(this)
