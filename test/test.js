@@ -1,3 +1,12 @@
+riot.tag('inner', '<inner> <h3>$0</h3> </inner>',
+
+[function(){return this.Math.random()}],
+
+function(self, opts) {
+	console.info('INITIALIZED')
+})
+
+  console.info('outer script')
 riot.tag('test-tag', '<test-tag> <h2 class="$0" onclick="$1">$2</h2> <div if="$3"> This is a desc, but <b>$4</b> <div each="$5"> <h3 onclick="$6">$7</h3> <b each="$8" class="tag" onclick="$9">$10</b> </div> </div> </test-tag>',
 
 [function(){return { thin: this.thin}},

@@ -13,9 +13,5 @@
 </div>
 
 <script>
-  riot.tag('foo', '<foo><h3>$0</h3></foo>', [ function() { return Math.random() } ], function() {
-    console.info('INITIALIZED')
-  })
-
   var tag = riot.mount('test-tag', test, { body: 'Something <h2>Strong</h2>' })
 </script>

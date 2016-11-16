@@ -1,9 +1,7 @@
 
 # TODO
-- if: both expressions & body
+- custom tag loops
 - each and if together
-
-
 - no loop index variable?
 - root attributes
 - multi tag / js compiler

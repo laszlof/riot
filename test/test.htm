@@ -1,4 +1,16 @@
 
+<inner>
+  <h3>{ Math.random() }</h3>
+
+  <script>
+    console.info('INITIALIZED')
+  </script>
+</inner>
+
+<script>
+  console.info('outer script')
+</script>
+
 <test-tag>
 
   <h2 class={ thin: thin } onclick={ toggle }>
@@ -26,7 +38,7 @@
 
   <button onclick={ add } if={ !hide }>Push</button>
 
-  <foo each={ thread in threads } onclick={ remove }/>
+  <inner each={ thread in threads } onclick={ remove }/>
   -->
 
   <script>

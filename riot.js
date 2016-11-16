@@ -162,14 +162,14 @@ function attr(root) {
 }
 
 // walk trough a DOM tree
-self.walk = function(dom, fn) {
+function walk(dom, fn) {
 
   if (fn(dom) === false) return
 
   dom = dom.firstChild
 
   while (dom) {
-    if (self.walk(dom, fn) === false) return
+    if (walk(dom, fn) === false) return
     dom = dom.nextSibling
   }
 }

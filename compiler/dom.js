@@ -1,12 +1,17 @@
 
 const Tokenizer = require('simple-html-tokenizer'),
-    SDOM = require('simple-dom'),
-    self = module.exports = {}
+  SDOM = require('simple-dom'),
+  self = module.exports = {}
 
 
 function toString(root) {
   const serializer = new SDOM.HTMLSerializer(SDOM.voidMap)
   return serializer.serialize(root)
+}
+
+self.create = function(name) {
+  var document = new SDOM.Document()
+  return document.createElement(name)
 }
 
 self.html = function(root) {

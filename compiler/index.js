@@ -102,7 +102,7 @@ function getScript(root) {
   return parseJS(script.trim())
 }
 
-function Tag(root, script) {
+function Tag(tag_name, root, script) {
 
   const fn_index = {},
     loop_args = [],
@@ -190,8 +190,8 @@ function Tag(root, script) {
     // console.info(html)
     // console.info(fns)
 
-    return util.format("riot.tag('%s', '%s',\n\n[%s],\n\nfunction(self, opts) {\n\t%s\n})",
-      root.firstChild.tagName.toLowerCase(),
+    return util.format("riot.tag('%s', '%s',\n\n[%s],\n\nfunction(self, opts) {\n\t%s\n})\n",
+      tag_name,
       html.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim(),
       fns.join(',\n'),
       script
@@ -203,10 +203,26 @@ function Tag(root, script) {
 
 module.exports = function(html) {
   html = quoteExpressions(closeTags(html))
+  const doc = dom.parse(html.trim())
 
-  const root = dom.parse(html.trim()),
-    script = getScript(root),
-    tag = new Tag(root, script)
+  var js = '', index = 0, node
 
-  return tag.generate()
+  while (node = doc.childNodes.item(index++)) {
+    var name = (node.tagName || '').toLowerCase()
+
+    if (name == 'script') {
+      js += dom.html(node)
+
+    } else if (name) {
+      var root = dom.create('div')
+      root.appendChild(node)
+
+      var script = getScript(root),
+        tag = new Tag(name, root, script)
+
+      js += tag.generate()
+    }
+  }
+
+  return js
 }
