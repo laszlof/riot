@@ -1,15 +1,13 @@
 
 <inner>
   <h3>{ Math.random() }</h3>
+  <p>Descrip</p>
 
   <script>
     console.info('INITIALIZED')
   </script>
 </inner>
 
-<script>
-  console.info('outer script')
-</script>
 
 <test-tag>
 
@@ -17,19 +15,21 @@
     { format(title) }
   </h2>
 
-  <div if={ !hide }>
-    This is a desc, but <b>{ console.info('here') || title }</b>
+  <inner each={ thread in threads }/>
 
-    <div each={ thread in threads }>
-      <h3 onclick={ remove }>{ thread.title }</h3>
+  <hr>
 
-      <b each={ tag in thread.tags } class="tag" onclick={ removeTag(thread) }>
-        { tag }
-      </b>
-    </div>
+  <p if={ !hide }>This is a desc, but <b>{ title }</b></p>
 
-  </div>
+
   <!--
+  <div each={ thread in threads }>
+    <h3 onclick={ remove }>{ thread.title }</h3>
+
+    <b each={ tag in thread.tags } class="tag" onclick={ removeTag(thread) }>
+      { tag }
+    </b>
+  </div>
 
   <section each={ thread in threads } onclick={ remove }>
     <h3>{ title } / { thread.title }</h3>
@@ -55,6 +55,7 @@
     }
 
     toggle() {
+      if (items[2]) items = this.threads = [1, 2]
       this.thin = !this.thin
       this.hide = !this.hide
     }

@@ -1,28 +1,31 @@
 !function() {
 
+/* Container for loops, custom tags and conditionals */
+
 function Block(tag, fns, root, item) {
 
   var ifs = [],
     loops = [],
+    tags = [],
     expr = []
 
   this.update = function() {
+    each(ifs.concat(tags).concat(loops), function(el) {
+      el.update()
+    })
+
     each(expr, function(fn) {
       fn.call(tag, item)
     })
 
-    each(ifs, function(clause) {
-      clause.update()
-    })
   }
 
-  // extract expressions, loops and conditionals for later execution
+  // extract dynamic parts for later execution
   walk(root, function(node) {
 
     // if
     attr = remAttr(node, 'if')
     var cond = getFunction(attr)
-
     if (cond) { ifs.push(new IF(node, tag, cond, item)); return false }
 
     // each
@@ -31,7 +34,10 @@ function Block(tag, fns, root, item) {
 
     // custom tag
     var name = getTagName(node)
-    if (node != tag.root && isCustom(name)) return riot.mount(name, node, item)
+    if (node != tag.root && isCustom(name)) {
+      tags.push(riot.mount(name, node, item))
+      return false
+    }
 
     // body
     var fn = getFunction(node.nodeValue)
@@ -121,6 +127,11 @@ function insertBefore(node, new_node) {
   return new_node
 }
 
+function removeNode(node) {
+  var parent = node.parentNode
+  parent && parent.removeChild(node)
+}
+
 // get and remove attribute.
 function remAttr(node, name) {
   var attr = node.tagName && node.getAttribute(name)
@@ -203,20 +214,15 @@ function IF(node, tag, fn, item) {
 
   // invisible marker node
   var stub = insertBefore(node, document.createTextNode('')),
-    parent = node.parentNode,
     mounted
 
   this.update = function() {
-    return fn.call(tag, item) ? mount() : unmount()
-  }
-
-  function unmount() {
-    parent && parent.removeChild(node)
+    return fn.call(tag, item) ? mount() : removeNode(node)
   }
 
   function mount() {
     !mounted && tag.addBlock(node, item)
-    insertBefore(stub, node)
+    mounted = insertBefore(stub, node)
   }
 
 }
@@ -227,22 +233,27 @@ function Loop(query, node, tag, fns, item) {
 
   if (!items) return
 
-
   // insert hidden start node as marker
   var last = node.previousSibling,
     start = insertBefore(last, document.createTextNode('')),
     nodes = []
 
 
+  function changeItems(arr) {
+    items.splice(0, items.length)
+    each(arr, append)
+    items = syncable(arr)
+  }
+
+  this.update = function() {
+    var arr = query.call(tag, item)
+    if (arr != items) changeItems(arr)
+  }
+
   function add(obj, sibling) {
     var el = node.cloneNode(true)
     insertBefore(sibling, el)
     return el
-  }
-
-  function detach(node) {
-    node.parentNode.removeChild(node)
-    // TODO: cleanup
   }
 
   function append(obj, i) {
@@ -257,41 +268,48 @@ function Loop(query, node, tag, fns, item) {
     tag.addBlock(node, obj)
   }
 
+  function syncable(items) {
 
-  // push
-  var _push = items.push
+    // push
+    var _push = items.push
 
-  items.push = function(obj) {
-    _push.call(items, obj)
-    append(obj)
-  }
+    items.push = function(obj) {
+      _push.call(items, obj)
+      append(obj)
+    }
 
-  // unshift
-  var _unshift = items.unshift
+    // unshift
+    var _unshift = items.unshift
 
-  items.unshift = function(obj) {
-    _unshift.call(items, obj)
-    prepend(obj)
-  }
+    items.unshift = function(obj) {
+      _unshift.call(items, obj)
+      prepend(obj)
+    }
 
-  // splice
-  var _splice = items.splice
+    // splice
+    var _splice = items.splice
 
-  items.splice = function(i, len) {
-    each(nodes.slice(i, i + len), detach)
-    nodes.splice(i, len)
-    _splice.call(items, i, len)
-  }
+    items.splice = function(i, len) {
+      each(nodes.slice(i, i + len), removeNode)
+      nodes.splice(i, len)
+      _splice.call(items, i, len)
+    }
 
-  // remove() shortcut. commonly used
-  items.remove = function(obj) {
-    var i = items.indexOf(obj)
-    if (i >= 0) return items.splice(i, 1)
+    // remove() shortcut. commonly used
+    items.remove = function(obj) {
+      var i = items.indexOf(obj)
+      if (i >= 0) return items.splice(i, 1)
+    }
+
+    return items
+
   }
 
   // TODO: sort
-  detach(node)
 
+
+  removeNode(node)
+  syncable(items)
   each(items, append)
 
 }
@@ -337,43 +355,25 @@ function Tag(tag_name, html, fns, impl, opts) {
 
   // mount
   this.mount = function(to) {
+    if (root) return
 
-    // first time
-    if (!root) {
-      root = self.root = mkdom(html)
-      impl && impl.call(self, self, opts)
-      self.addBlock(root, opts)
-    }
-
-    // already mounted & conditional
-    if (!to) return root.mount()
+    root = self.root = mkdom(html)
+    impl && impl.call(self, self, opts)
+    self.addBlock(root, opts)
 
     extend(opts, attr(to))
 
-    // insert to DOM
-    var to_name = to.tagName.toLowerCase()
-
-    if (to_name == tag_name) {
-      each(root.childNodes, function(node) {
-        to.appendChild(node)
-      })
+    // insert
+    if (getTagName(to) == tag_name) {
+      while (root.childNodes[0]) to.appendChild(root.firstChild)
       root = to
 
     } else {
       to.parentNode.replaceChild(root, to)
     }
 
-    to.__tag = self
-
     return self.update()
   }
-
-
-  this.unmount = function() {
-    var stub = root.unmount()
-    if (stub) stub.__tag = self
-  }
-
 
   this.update = function(data) {
     if (data) extend(self, data)
@@ -382,24 +382,6 @@ function Tag(tag_name, html, fns, impl, opts) {
     each(blocks, function(block) {
       block.update()
     })
-
-    /*
-
-    // walk trough nodes and update them
-    walk(root, function(node) {
-      if (node == root) return
-
-      var name = getTagName(node),
-        is_custom = isCustom(name),
-        tag = node.__tag
-
-      // custom tag
-      if (tag) tag.update()
-      else if (is_custom) riot.mount(name, node)
-
-    })
-
-    */
 
     return self
   }

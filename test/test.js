@@ -1,25 +1,18 @@
-riot.tag('inner', '<inner> <h3>$0</h3> </inner>',
+riot.tag('inner', '<inner> <h3>$0</h3> <p>Descrip</p> </inner>',
 
-[function(){return this.Math.random()}],
+[function(){return Math.random()}],
 
 function(self, opts) {
 	console.info('INITIALIZED')
 })
-
-  console.info('outer script')
-riot.tag('test-tag', '<test-tag> <h2 class="$0" onclick="$1">$2</h2> <div if="$3"> This is a desc, but <b>$4</b> <div each="$5"> <h3 onclick="$6">$7</h3> <b each="$8" class="tag" onclick="$9">$10</b> </div> </div> </test-tag>',
+riot.tag('test-tag', '<test-tag> <h2 class="$0" onclick="$1">$2</h2> <inner each="$3"></inner> <hr> <p if="$4">This is a desc, but <b>$5</b></p> </test-tag>',
 
 [function(){return { thin: this.thin}},
 function(){return this.toggle},
 function(){return this.format(this.title)},
-function(){return !this.hide},
-function(){return console.info('here') || this.title},
 function(){return this.threads},
-function(thread){return this.remove},
-function(thread){return thread.title},
-function(thread){return thread.tags},
-function(e, tag) { return this.removeTag(this.thread, e, tag) },
-function(tag){return tag}],
+function(){return !this.hide},
+function(thread){return this.title}],
 
 function(self, opts) {
 	var items = this.threads = [
@@ -35,6 +28,7 @@ function(self, opts) {
     }.bind(this)
 
     this.toggle = function() {
+      if (items[2]) items = this.threads = [1, 2]
       this.thin = !this.thin
       this.hide = !this.hide
     }.bind(this)
