@@ -9,7 +9,7 @@ const RESERVED = 'console document false function instanceof location null self 
   ATTR_EXPR = /([\w\-]+=)(\{[^}]+\})([\s>])/g,
   VAR_NAME = /(^|[\!\s\(])+([a-z]\w*)\b\s?/g,
   TAG = /<(\w+-?\w+)([^>]*)>/g,
-  EXPR = /\{([^}]+)\}/g
+  EXPR = /\{([^}]+)\}\}?/g
 
 
 
@@ -33,7 +33,9 @@ function objectify(str, args) {
 function toArray(text, args) {
   return text.split(EXPR).map(function(el, i) {
     if (i % 2) {
-      return /\w+:/.test(el.trim()) ? objectify(el, args) : setThis(el, args)
+      return el[0] == '{' ? `{ _html: ${ setThis(el.slice(1), args) } }` :
+        /\w+:/.test(el.trim()) ? objectify(el, args) :
+        setThis(el, args)
     }
     return '"' + el + '"'
 
@@ -65,13 +67,6 @@ function quoteExpressions(html) {
   return html.replace(ATTR_EXPR, function(match, beg, expr, end) {
     return beg + '"' + expr.replace(/"/g, "'") + '"' + end
   })
-}
-
-
-function getRaw(text) {
-  if (text && text.slice(0, 2) == '{{' && text.slice(-2) == '}}') {
-    return `{ _html: ${text.slice(2, -2).trim()} }`
-  }
 }
 
 
@@ -171,10 +166,6 @@ function Tag(tag_name, root, script) {
       setAttributes(el.attributes, args)
 
       var text = el.nodeValue && el.nodeValue.trim()
-
-      // {{ unescaped }}
-      const raw = getRaw(text)
-      if (raw) text = raw
 
       const i = pushFn(text, args)
       if (i >= 0) el.nodeValue = '$' + i
