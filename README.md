@@ -70,7 +70,8 @@ I felt following features were lacking:
 
 5. Meaning compiler error messages such as "Unbalanced tag". The compiler now traverses the HTML with `simple-dom` having deeper understanding of the layout.
 
-6. IE8 support. But only if this comes without extra work, currently seems so.
+7. IE8 support. But only if this comes without extra work, currently seems so.
+
 
 
 ## Breaking changes

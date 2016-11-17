@@ -2,7 +2,7 @@
 // https://github.com/riot/compiler/blob/master/src/core.js#L410
 
 const JS_ES6SIGN = /^[ \t]*([$_A-Za-z][$\w]*)\s*\([^()]*\)\s*{/m,
-  JS_COMMS = /\/\/[^\r\n]*/g
+  JS_COMMS = /\/\/ [^\r\n]*/g
 
 
 const RE = RegExp

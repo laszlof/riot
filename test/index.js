@@ -1,6 +1,7 @@
 
 const test = require('./lib/tag-test'),
-  assert = require('assert')
+  assert = require('assert'),
+  start = Date.now()
 
 
 // expressions
@@ -107,6 +108,14 @@ assert.equal(els.length, 2)
 assert.equal(els[1].text(), -1)
 
 
+// change array
+tag.opts.items = [10, 20, 30]
+tag.update()
+els = $('span')
+assert.equal(els.length, 3)
+assert.equal(els[1].text(), 40)
+
+
 
 // nested loops
 tag = test(`
@@ -135,3 +144,5 @@ assert.equal(els[0].text(), 1)
 assert.equal(els[3].text(), 2)
 assert.equal(els[6].text(), 3)
 
+
+console.info(`All passed in ${Date.now() - start}ms`)

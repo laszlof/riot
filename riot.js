@@ -34,6 +34,7 @@ function Block(tag, fns, root, item) {
 
     // custom tag
     var name = getTagName(node)
+
     if (node != tag.root && isCustom(name)) {
       tags.push(riot.mount(name, node, item))
       return false
@@ -43,9 +44,11 @@ function Block(tag, fns, root, item) {
     var fn = getFunction(node.nodeValue)
 
     fn && expr.push(function() {
-      var val = fn.call(tag, item)
-      if (val && val._html) node.parentNode.innerHTML = val._html
-      else node.nodeValue = toValue(val)
+      var arr = fn.call(tag, item),
+        val = toValue(arr)
+
+      if (hasHTML(arr)) node.parentNode.innerHTML = val
+      else node.nodeValue = val
     })
 
 
@@ -92,6 +95,7 @@ function Block(tag, fns, root, item) {
     each(node.attributes, function(attr) {
       var fn = getFunction(attr.value)
       if (!fn) return
+      attr.value = ''
 
       var name = attr.name
 
@@ -132,6 +136,10 @@ function removeNode(node) {
   parent && parent.removeChild(node)
 }
 
+function moveChildren(from, to) {
+  while (from.childNodes[0]) to.appendChild(from.firstChild)
+}
+
 // get and remove attribute.
 function remAttr(node, name) {
   var attr = node.tagName && node.getAttribute(name)
@@ -158,9 +166,9 @@ function extend(obj, from) {
 }
 
 function mkdom(html) {
-  var el = document.createElement('div')
+  var el = document.createElement('template')
   el.innerHTML = html.trim()
-  return el.firstChild
+  return (el.content || el).firstChild
 }
 
 // returns node attributes as object
@@ -190,9 +198,16 @@ function walk(dom, fn) {
 function objToString(obj) {
   var ret = []
   for (var key in obj) {
-    if (obj[key]) ret.push(key)
+    var val = obj[key]
+    if (val) ret.push(key == '_html' ? val : key)
   }
   return ret.join(' ')
+}
+
+function hasHTML(arr) {
+  for (var i = 0, el; (el = arr[i]); i++) {
+    if (el._html) return true
+  }
 }
 
 // ['When', this.country, { fails: fail }] --> 'When Finland fails'
@@ -230,8 +245,6 @@ function IF(node, tag, fn, item) {
 function Loop(query, node, tag, fns, item) {
 
   var items = query.call(tag, item)
-
-  if (!items) return
 
   // insert hidden start node as marker
   var last = node.previousSibling,
@@ -276,6 +289,7 @@ function Loop(query, node, tag, fns, item) {
     items.push = function(obj) {
       _push.call(items, obj)
       append(obj)
+      tag.update()
     }
 
     // unshift
@@ -284,6 +298,7 @@ function Loop(query, node, tag, fns, item) {
     items.unshift = function(obj) {
       _unshift.call(items, obj)
       prepend(obj)
+      tag.update()
     }
 
     // splice
@@ -313,17 +328,20 @@ function Loop(query, node, tag, fns, item) {
       // insert new ones
       _sort.call(items, fn)
       each(items, append)
+
+      tag.update()
     }
 
     return items
 
   }
 
-
-
   removeNode(node)
-  syncable(items)
-  each(items, append)
+
+  if (items) {
+    syncable(items)
+    each(items, append)
+  }
 
 }
 
@@ -340,10 +358,11 @@ riot.tag = function(name, html, fns, impl) {
 
 // mount
 riot.mount = function(name, to, opts) {
-  var tag = tags[name]
-  if (tag) {
-    var impl = new Tag(name, tag[0], tag[1], tag[2], opts)
-    return impl.mount(to)
+  var def = tags[name]
+
+  if (def) {
+    var tag = new Tag(name, def[0], def[1], def[2], opts)
+    return tag.mount(to)
   }
 }
 
@@ -374,15 +393,17 @@ function Tag(tag_name, html, fns, impl, opts) {
     impl && impl.call(self, self, opts)
     self.addBlock(root, opts)
 
-    extend(opts, attr(to))
+    if (to) {
+      extend(opts, attr(to))
 
-    // insert
-    if (getTagName(to) == tag_name) {
-      while (root.childNodes[0]) to.appendChild(root.firstChild)
-      root = to
+      // insert
+      if (getTagName(to) == tag_name) {
+        moveChildren(root, to)
+        root = to
 
-    } else {
-      to.parentNode.replaceChild(root, to)
+      } else {
+        to.parentNode.replaceChild(root, to)
+      }
     }
 
     return self.update()

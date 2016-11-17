@@ -1,51 +1,21 @@
-riot.tag('inner', '<inner> <h3>$0</h3> <p>Descrip</p> </inner>',
+riot.tag('test-tag', '<test-tag> <img src="$0"> <textarea>$1</textarea> <input value="$1"> <svg> <circle each="$2" cx="$3" cy="$4" r="20" fill="black"></circle> </svg> </test-tag>',
 
-[function(){return Math.random()}],
-
-function(self, opts) {
-	console.info('INITIALIZED')
-})
-riot.tag('test-tag', '<test-tag> <h2 class="$0" onclick="$1">$2</h2> <div each="$3">$4</div> </test-tag>',
-
-[function(){return { thin: this.thin}},
-function(){return this.toggle},
-function(){return this.format(this.title)},
-function(){return this.threads},
-function(thread){return thread.title}],
+[function(){return this.src},
+function(){return this.val},
+function(){return this.points},
+function(p){return p.x * 10 + 5},
+function(p){return p.y * 10 + 5}],
 
 function(self, opts) {
-	var items = this.threads = [
-      { title: 'Thirdi', date: 20928, tags: ['cat', 'doggi', 'animal'] },
-      { title: 'Second', date: 20928, tags: ['cat', 'snake', 'lizard'] },
-      { title: 'Firsti', date: 20928, tags: ['dog', 'drug'] }
-    ]
-    this.title = 'This is a title'
-    this.hide = true
+	this.points = [{'x': 1,'y': 0}, {'x': 9, 'y': 6}, {'x': 4, 'y': 7}]
+    this.val = 'This is value'
 
-    this.format = function(title) {
-      return title.toUpperCase()
+    this.set = function() {
+      this.update({
+        src: '//d13yacurqjgara.cloudfront.net/users/4664/screenshots/3101365/cocx_crop_1x.jpg',
+        val: 'New value'
+      })
     }.bind(this)
 
-    this.toggle = function() {
-       
-      items.sort(function(a, b) { return a.title != b.title })
-      this.thin = !this.thin
-      this.hide = !this.hide
-    }.bind(this)
-
-    this.setState = function() {
-      console.info(arguments)
-    }.bind(this)
-
-    this.add = function() {
-      items.unshift({ title: 'Added', date: Math.random() })
-    }.bind(this)
-
-    this.remove = function(e, item) {
-      items.remove(item)
-    }.bind(this)
-
-    this.removeTag = function(e, item) {
-      console.info(arguments)
-    }.bind(this)
+    setTimeout(this.set, 1000)
 })

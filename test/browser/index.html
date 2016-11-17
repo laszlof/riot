@@ -1,17 +1,22 @@
+<!DOCTYPE html>
 
-<script src="../riot.js"></script>
-<script src="test.js"></script>
-<style>
-  body { font-family: "avenir next", sans-serif;}
-  test-tag { display: block; margin: 5% auto; max-width: 500px;}
-  .thin {font-weight: normal}
-  .tag {color: #0ae; margin-right: .5em; }
-</style>
+<head>
+  <script src="../../riot.js"></script>
+  <script src="test.js"></script>
 
-<div id="test">
-  <h4>This comes from inside</h4>
-</div>
+  <style>
+    body { font-family: "avenir next", sans-serif;}
+    test-tag { display: block; margin: 5% auto; max-width: 500px;}
+    .thin {font-weight: normal}
+    .tag {color: #0ae; margin-right: .5em; }
+  </style>
+</head>
 
-<script>
-  var tag = riot.mount('test-tag', test, { body: 'Something <h2>Strong</h2>' })
-</script>
+<body>
+  <div id="test"></div>
+
+  <script>
+    var root = document.querySelector('test') || test
+    var tag = riot.mount('test-tag', root, { body: 'Something <h2>Strong</h2>' })
+  </script>
+</body>

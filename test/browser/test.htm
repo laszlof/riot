@@ -1,76 +1,30 @@
 
-<inner>
-  <h3>{ Math.random() }</h3>
-  <p>Descrip</p>
-
-  <script>
-    console.info('INITIALIZED')
-  </script>
-</inner>
-
-
 <test-tag>
 
-  <h2 class={ thin: thin } onclick={ toggle }>
-    { format(title) }
-  </h2>
+  <img src={ src }>
+  <textarea> { val } </textarea>
+  <input value={ val }>
 
-  <div each="{ thread in threads }">
-    { thread.title }
-  </div>
-
-  <!--
-    <h3 onclick={ remove }>{ thread.title }</h3>
-
-    <b each={ tag in thread.tags } class="tag" onclick={ removeTag(thread) }>
-      { tag }
-    </b>
-
-  <section each={ thread in threads } onclick={ remove }>
-    <h3>{ title } / { thread.title }</h3>
-    <time onclick={ setState(thread.title) }>{ thread.date }</time>
-  </section>
-
-  <button onclick={ add } if={ !hide }>Push</button>
-
-  <inner each={ thread in threads } onclick={ remove }/>
-  -->
+  <svg>
+    <circle each={ p in points }
+      cx="{ p.x * 10 + 5 }"
+      cy="{ p.y * 10 + 5 }"
+      r="20"
+      fill="black"></circle>
+  </svg>
 
   <script>
-    var items = this.threads = [
-      { title: 'Thirdi', date: 20928, tags: ['cat', 'doggi', 'animal'] },
-      { title: 'Second', date: 20928, tags: ['cat', 'snake', 'lizard'] },
-      { title: 'Firsti', date: 20928, tags: ['dog', 'drug'] }
-    ]
-    this.title = 'This is a title'
-    this.hide = true
+    this.points = [{'x': 1,'y': 0}, {'x': 9, 'y': 6}, {'x': 4, 'y': 7}]
+    this.val = 'This is value'
 
-    format(title) {
-      return title.toUpperCase()
+    set() {
+      this.update({
+        src: '//d13yacurqjgara.cloudfront.net/users/4664/screenshots/3101365/cocx_crop_1x.jpg',
+        val: 'New value'
+      })
     }
 
-    toggle() {
-      // if (items[2]) items = this.threads = [1, 2]
-      items.sort(function(a, b) { return a.title != b.title })
-      this.thin = !this.thin
-      this.hide = !this.hide
-    }
-
-    setState() {
-      console.info(arguments)
-    }
-
-    add() {
-      items.unshift({ title: 'Added', date: Math.random() })
-    }
-
-    remove(e, item) {
-      items.remove(item)
-    }
-
-    removeTag(e, item) {
-      console.info(arguments)
-    }
+    setTimeout(this.set, 1000)
 
   </script>
 
