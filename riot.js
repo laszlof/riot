@@ -126,6 +126,10 @@ function each(arr, fn) {
   }
 }
 
+function emptyNode() {
+  return document.createTextNode('')
+}
+
 function insertBefore(node, new_node) {
   node.parentNode.insertBefore(new_node, node)
   return new_node
@@ -228,7 +232,7 @@ function toValue(val) {
 function IF(node, tag, fn, item) {
 
   // invisible marker node
-  var stub = insertBefore(node, document.createTextNode('')),
+  var stub = insertBefore(node, emptyNode()),
     mounted
 
   this.update = function() {
@@ -247,10 +251,15 @@ function Loop(query, node, tag, fns, item) {
   var items = query.call(tag, item)
 
   // insert hidden start node as marker
-  var last = node.previousSibling,
-    start = insertBefore(last, document.createTextNode('')),
-    nodes = []
+  var last = node.previousSibling
 
+  if (!last) {
+    last = emptyNode()
+    node.parentNode.appendChild(last)
+  }
+
+  var start = insertBefore(last, emptyNode()),
+    nodes = []
 
   function changeItems(arr) {
     items.splice(0, items.length)

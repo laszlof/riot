@@ -1,6 +1,19 @@
 
 <test-tag>
 
+  <table border=1>
+    <tr><th each={ cell in rows }>{ cell }</th></tr>
+    <tr><td each={ cell in rows }>{ cell }</td></tr>
+  </table>
+
+  <table border=1>
+    <tr each={ cell in rows }>
+      <td>{ cell }</td>
+      <td>{ cell } another</td>
+    </tr>
+  </table>
+
+  <!--
   <img src={ src }>
   <textarea> { val } </textarea>
   <input value={ val }>
@@ -13,13 +26,20 @@
       fill="black"></circle>
   </svg>
 
+  <svg>
+    <rect x="10" y="10" width="100" height="100"/>
+  </svg>
+  -->
+
   <script>
+    this.rows = ['one', 'two', 'three']
+
     this.points = [{'x': 1,'y': 0}, {'x': 9, 'y': 6}, {'x': 4, 'y': 7}]
     this.val = 'This is value'
 
     set() {
       this.update({
-        src: '//d13yacurqjgara.cloudfront.net/users/4664/screenshots/3101365/cocx_crop_1x.jpg',
+        // src: '//d13yacurqjgara.cloudfront.net/users/4664/screenshots/3101365/cocx_crop_1x.jpg',
         val: 'New value'
       })
     }

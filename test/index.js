@@ -145,4 +145,19 @@ assert.equal(els[3].text(), 2)
 assert.equal(els[6].text(), 3)
 
 
+// table
+tag = test(`
+  <test>
+    <table>
+      <tr> <th each={ cell in opts.rows }>{ cell }</th></tr>
+    </table>
+  </test>
+`, {
+  rows: ['one', 'two', 'three']
+})
+
+els = tag.findAll('th')
+console.info(els.length)
+
+
 console.info(`All passed in ${Date.now() - start}ms`)

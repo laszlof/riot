@@ -1,18 +1,18 @@
-riot.tag('test-tag', '<test-tag> <img src="$0"> <textarea>$1</textarea> <input value="$1"> <svg> <circle each="$2" cx="$3" cy="$4" r="20" fill="black"></circle> </svg> </test-tag>',
+riot.tag('test-tag', '<test-tag> <table border="1"> <tr><th each="$0">$1</th></tr> <tr><td each="$0">$1</td></tr> </table> <table border="1"> <tr each="$0"> <td>$1</td> <td>$2</td> </tr> </table> </test-tag>',
 
-[function(){return this.src},
-function(){return this.val},
-function(){return this.points},
-function(p){return p.x * 10 + 5},
-function(p){return p.y * 10 + 5}],
+[function(){return this.rows},
+function(cell){return cell},
+function(cell){return [ cell ," another"]}],
 
 function(self, opts) {
-	this.points = [{'x': 1,'y': 0}, {'x': 9, 'y': 6}, {'x': 4, 'y': 7}]
+	this.rows = ['one', 'two', 'three']
+
+    this.points = [{'x': 1,'y': 0}, {'x': 9, 'y': 6}, {'x': 4, 'y': 7}]
     this.val = 'This is value'
 
     this.set = function() {
       this.update({
-        src: '//d13yacurqjgara.cloudfront.net/users/4664/screenshots/3101365/cocx_crop_1x.jpg',
+         
         val: 'New value'
       })
     }.bind(this)
