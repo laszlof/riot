@@ -5,7 +5,7 @@ const parseJS = require('./js-parse'),
   dom = require('./dom')
 
 // RE
-const RESERVED = 'console document false function instanceof location null opts self this top true typeof undefined window'.split(' '),
+const RESERVED = 'console document false function instanceof location null self this top true typeof undefined window'.split(' '),
   ATTR_EXPR = /([\w\-]+=)(\{[^}]+\})([\s>])/g,
   VAR_NAME = /(^|[\!\s\(])+([a-z]\w*)\b\s?/g,
   TAG = /<(\w+-?\w+)([^>]*)>/g,
