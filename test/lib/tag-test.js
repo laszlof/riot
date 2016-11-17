@@ -38,7 +38,15 @@ function find(root, name) {
     if (ret) return false
     if (el.tagName == name.toUpperCase()) ret = el
   })
-  return $(ret)
+  return ret && $(ret)
+}
+
+function findAll(root, name) {
+  var ret = []
+  dom.walk(root, function(el) {
+    if (el.tagName == name.toUpperCase()) ret.push($(el))
+  })
+  return ret
 }
 
 module.exports = function(data, html) {
@@ -47,8 +55,14 @@ module.exports = function(data, html) {
   const tag_name = html.trim().split(/[ >]/)[0].slice(1),
     tag = riot.mount(tag_name, null, data)
 
-  return function(query) {
+  tag.find = function(query) {
     return find(tag.root, query)
   }
+
+  tag.findAll = function(query) {
+    return findAll(tag.root, query)
+  }
+
+  return tag
 }
 
