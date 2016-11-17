@@ -6,9 +6,18 @@ const test = require('./lib/tag-test'),
 // expressions
 var $, tag = test(`
   <test>
+    <h1>{ upper(title) }</h1>
     <em>a { b: true, c: true } d</em>
-    <p class={ a: 1, b: true, c: false }>{ opts.title }</p>
+    <p class={ a: 1, b: true, c: false }>{ title }</p>
     <div id="a { opts.title }">{{ opts.body }} b</div>
+
+    <script>
+      this.title = opts.title
+
+      upper(str) {
+        return str.toUpperCase()
+      }
+    </script>
   </test>
 `, { 
   body: '<b>a</b>',
@@ -16,6 +25,7 @@ var $, tag = test(`
 })
 
 $ = tag.find
+assert.equal($('h1').text(), 'TEST')
 assert.equal($('p').text(), 'test')
 assert.equal($('p').attr('class'), 'a b')
 assert.equal($('em').text(), 'a b c d')
@@ -53,15 +63,49 @@ tag = test(`
 
 `, { items: [1, 2, 3] })
 
-var els = tag.findAll('b')
+$ = tag.findAll
+var els = $('b')
 assert.equal(els.length, 3)
 assert.equal(els[0].text(), 1)
 assert.equal(els[1].text(), 2)
 
-els = tag.findAll('span')
+els = $('span')
 assert.equal(els.length, 3)
 assert.equal(els[0].text(), 2)
 assert.equal(els[1].text(), 4)
+
+// push
+var items = tag.opts.items
+items.push(4)
+els = $('b')
+assert.equal(els.length, 4)
+assert.equal(els[3].text(), 4)
+assert.equal($('span').length, 4)
+
+// unshift
+items.unshift(-1)
+els = $('b')
+assert.equal(els.length, 5)
+assert.equal(els[0].text(), -1)
+
+// sort desc
+items.sort(function(a, b) { return a < b })
+els = $('b')
+assert.equal(els[0].text(), 4)
+assert.equal(els[4].text(), -1)
+
+// splice
+items.splice(1, 2)
+els = $('b')
+assert.equal(els.length, 3)
+assert.equal(els[1].text(), 1)
+
+// remove
+items.remove(1)
+els = $('b')
+assert.equal(els.length, 2)
+assert.equal(els[1].text(), -1)
+
 
 
 // nested loops
