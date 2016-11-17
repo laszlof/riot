@@ -1,21 +1,17 @@
 
 cli=./compiler/cli.js
-riot=test/node-riot.js
+riot=test/lib/node-riot.js
 
 
 test: node-riot
 	@ node test
 
 # Node version of Riot for testing
-node-riot: test-tags
-	@cat test/build/head.js > $(riot)
+node-riot:
+	@echo "\n/* auto-generated! */\n\nwindow = {}" > $(riot)
 	@cat lib/* >> $(riot)
-	@cat test/dist/* >> $(riot)
-	@cat test/build/tail.js >> $(riot)
+	@cat test/lib/nodefy.js >> $(riot)
 
-# compile test tags
-test-tags:
-	@ $(cli) test/tags/expr.htm test/dist
 
 # just a playground
 browser: riot

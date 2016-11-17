@@ -26,31 +26,6 @@ self.html = function(root) {
   return html
 }
 
-function $(el) {
-  el.text = function() {
-    return el.firstChild.nodeValue
-  }
-
-  el.attr = function(name) {
-    return el.getAttribute(name)
-  }
-
-  el.html = function() {
-    return self.html(el)
-  }
-
-  return el
-}
-
-self.find = function(root, name) {
-  var ret
-  self.walk(root, function(el) {
-    if (ret) return false
-    if (el.tagName == name.toUpperCase()) ret = el
-  })
-  return $(ret)
-}
-
 self.parse = function(html) {
   const blank = new SDOM.Document()
   const parser = new SDOM.HTMLParser(Tokenizer.tokenize, blank, SDOM.voidMap)

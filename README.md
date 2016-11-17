@@ -70,6 +70,8 @@ I felt following features were lacking:
 
 5. Meaning compiler error messages such as "Unbalanced tag". The compiler now traverses the HTML with `simple-dom` having deeper understanding of the layout.
 
+6. IE8 support. But only if this comes without extra work, currently seems so.
+
 
 ## Breaking changes
 Due to following changes (on the tag syntax) a new major version number is required.
@@ -78,13 +80,12 @@ Due to following changes (on the tag syntax) a new major version number is requi
 
 2. The default extension for tag files is `htm` or `html` because HTML is the actual syntax of writing tags.
 
-3. No IE8 support == hack free code.
+3. No support for server side rendering. I haven't seen a succesfull isomorphic application so far. We can make this if there is a real need.
 
-4. No support for server side rendering. I haven't seen a succesfull isomorphic application so far. We can make this if there is a real need.
+4. `preventDefault` is not called by default
 
-5. `preventDefault` is not called by default
+5. No hacky `eventObject.item` property
 
-6. No hacky `eventObject.item` property
 
 ## Questions
 
