@@ -49,7 +49,7 @@ function findAll(root, name) {
   return ret
 }
 
-module.exports = function(data, html) {
+module.exports = function(html, data) {
   importTag(html)
 
   const tag_name = html.trim().split(/[ >]/)[0].slice(1),
