@@ -16,6 +16,11 @@ Object.defineProperty(SDOM.Element.prototype, 'innerHTML', {
   }
 })
 
+SDOM.Element.prototype.replaceChild = function(new_node, node) {
+  insertBefore(node, new_node)
+  removeNode(node)
+}
+
 function mkdom(html) {
   return dom.parse(html).firstChild
 }

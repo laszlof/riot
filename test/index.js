@@ -1,15 +1,18 @@
 
+
 const test = require('./lib/tag-test'),
   assert = require('assert'),
   start = Date.now()
 
+var $, tag
+
+
 
 // expressions
-var $, tag = test(`
-  <test>
+tag = test(`
+  <test class={ a: 1, b: true, c: false }>
     <h1>{ upper(title) }</h1>
     <em>a { b: true, c: true } d</em>
-    <p class={ a: 1, b: true, c: false }>{ title }</p>
     <div id="a { opts.title }">{{ opts.body }} b</div>
 
     <script>
@@ -26,12 +29,32 @@ var $, tag = test(`
 })
 
 $ = tag.find
+assert.equal($('test').attr('class'), 'a b')
 assert.equal($('h1').text(), 'TEST')
-assert.equal($('p').text(), 'test')
-assert.equal($('p').attr('class'), 'a b')
 assert.equal($('em').text(), 'a b c d')
 assert.equal($('div').html(), '<b>a</b> b')
 assert.equal($('div').attr('id'), 'a test')
+
+
+// root attributes
+tag = test(`
+  <test>
+    <inner class="z" id="zoo"/>
+  </test>
+
+  <inner class="{ a: 1, b: 1 } { opts.class }" id={ opts.id || id } data-id={ id }>
+    <h1>Title</h1>
+    <script>
+      this.id = 'test'
+    </script>
+  </inner>
+`)
+
+var el = tag.find('inner')
+assert.equal(el.attr('class'), 'a b z')
+assert.equal(el.attr('data-id'), 'test')
+assert.equal(el.attr('id'), 'zoo')
+
 
 
 // conditionals
@@ -157,7 +180,6 @@ tag = test(`
 })
 
 els = tag.findAll('th')
-console.info(els.length)
-
+assert.equal(els.length, 3)
 
 console.info(`All passed in ${Date.now() - start}ms`)

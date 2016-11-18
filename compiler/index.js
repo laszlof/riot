@@ -33,7 +33,7 @@ function objectify(str, args) {
 function toArray(text, args) {
   return text.split(EXPR).map(function(el, i) {
     if (i % 2) {
-      return el[0] == '{' ? `{ _html: ${ setThis(el.slice(1), args) } }` :
+      return el[0] == '{' ? `{ _html: ${ setThis(el.slice(1), args) } }` :
         /\w+:/.test(el.trim()) ? objectify(el, args) :
         setThis(el, args)
     }

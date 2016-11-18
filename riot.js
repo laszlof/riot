@@ -9,16 +9,6 @@ function Block(tag, fns, root, item) {
     tags = [],
     expr = []
 
-  this.update = function() {
-    each(ifs.concat(tags).concat(loops), function(el) {
-      el.update()
-    })
-
-    each(expr, function(fn) {
-      fn.call(tag, item)
-    })
-
-  }
 
   // extract dynamic parts for later execution
   walk(root, function(node) {
@@ -34,33 +24,46 @@ function Block(tag, fns, root, item) {
 
     // custom tag
     var name = getTagName(node)
-
     if (node != tag.root && isCustom(name)) {
-      tags.push(riot.mount(name, node, item))
-      return false
+      riot.mount(name, node, item); return false
     }
 
-    // body
+    // body expression
     var fn = getFunction(node.nodeValue)
 
     fn && expr.push(function() {
       var arr = fn.call(tag, item),
         val = toValue(arr)
 
-      if (hasHTML(arr)) node.parentNode.innerHTML = val
+      if (hasHTML(arr)) {
+        var parent = node.parent || node.parentNode
+        parent.innerHTML = val
+        node.parent = parent
+      }
       else node.nodeValue = val
     })
 
-
-    // rest of the attributes
+    // attribute expressions
     parseAttributes(node)
 
   })
 
-  // loops
-  loops = loops.map(function(loop) {
-    return new Loop(loop[0], loop[1], tag, fns, item)
+  // loops must be constructed after walk()
+  loops = loops.map(function(args) {
+    return new Loop(args[0], args[1], tag, fns, item)
   })
+
+
+  this.update = function() {
+    each(ifs.concat(tags).concat(loops), function(el) {
+      el.update()
+    })
+
+    each(expr, function(fn) {
+      fn.call(tag, item)
+    })
+
+  }
 
 
   /** private **/
@@ -106,7 +109,9 @@ function Block(tag, fns, root, item) {
       } else {
         expr.push(function() {
           var val = fn.call(tag, item)
-          attr.value = toValue(val)
+
+          // node.changed == changed parent node for custom tags
+          ;(node.changed || node).setAttribute(name, toValue(val))
         })
       }
 
@@ -142,6 +147,12 @@ function removeNode(node) {
 
 function moveChildren(from, to) {
   while (from.childNodes[0]) to.appendChild(from.firstChild)
+}
+
+function copyAttributes(from, to) {
+  each(from.attributes, function(attr) {
+    to.setAttribute(attr.name, attr.value)
+  })
 }
 
 // get and remove attribute.
@@ -405,12 +416,16 @@ function Tag(tag_name, html, fns, impl, opts) {
     if (to) {
       extend(opts, attr(to))
 
-      // insert
+      // move to new parent
       if (getTagName(to) == tag_name) {
+        copyAttributes(root, to)
         moveChildren(root, to)
+        root.changed = to
         root = to
 
+      // replace node
       } else {
+        copyAttributes(to, root)
         to.parentNode.replaceChild(root, to)
       }
     }
@@ -418,10 +433,10 @@ function Tag(tag_name, html, fns, impl, opts) {
     return self.update()
   }
 
+  // execute blocks
   this.update = function(data) {
     if (data) extend(self, data)
 
-    // execute blocks
     each(blocks, function(block) {
       block.update()
     })

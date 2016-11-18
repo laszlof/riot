@@ -1,6 +1,46 @@
 
 <test-tag>
 
+  <h3>Parent</h3>
+  <test-attr class="main" if={ flag }/>
+  <p>Test {{ body }}</p>
+
+  <script>
+    this.body = opts.body
+    setTimeout(function() {
+      self.update({ flag: true, body: 'Big <strong>fat</strong>' })
+    }, 10)
+  </script>
+</test-tag>
+
+
+<test-attr class="something { opts.class + 'joo' } { opts.class }" data-test="bar">
+  <h3>Child { opts.class }</h3>
+</test-attr>
+
+<test-form>
+  <textarea> { val } </textarea>
+  <input value={ val }>
+
+  <script>
+    this.val = 'This is value'
+  </script>
+
+</test-form>
+
+<test-image>
+  <img src={ src }>
+
+  <script>
+    set() {
+      this.update({ src: 'riot.png' })
+    }
+    setTimeout(this.set, 1000)
+  </script>
+
+</test-image>
+
+<test-table>
   <table border=1>
     <tr><th each={ cell in rows }>{ cell }</th></tr>
     <tr><td each={ cell in rows }>{ cell }</td></tr>
@@ -13,10 +53,14 @@
     </tr>
   </table>
 
-  <!--
-  <img src={ src }>
-  <textarea> { val } </textarea>
-  <input value={ val }>
+  <script>
+    this.rows = ['one', 'two', 'three']
+  </script>
+
+</test-table>
+
+
+<test-svg>
 
   <svg>
     <circle each={ p in points }
@@ -29,23 +73,9 @@
   <svg>
     <rect x="10" y="10" width="100" height="100"/>
   </svg>
-  -->
 
   <script>
-    this.rows = ['one', 'two', 'three']
-
     this.points = [{'x': 1,'y': 0}, {'x': 9, 'y': 6}, {'x': 4, 'y': 7}]
-    this.val = 'This is value'
-
-    set() {
-      this.update({
-        // src: '//d13yacurqjgara.cloudfront.net/users/4664/screenshots/3101365/cocx_crop_1x.jpg',
-        val: 'New value'
-      })
-    }
-
-    setTimeout(this.set, 1000)
-
   </script>
 
-</test-tag>
+</test-svg>
