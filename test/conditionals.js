@@ -7,12 +7,16 @@ module.exports = function(test, assert) {
   // conditionals
   tag = test(`
     <test>
-      <b if={ flag }>void</b>
-      <inner if={ !flag }/>
+      <b if={ hide }>void</b>
+      <inner if={ !hide }/>
+      <script>
+        this.counter = 0
+      </script>
     </test>
 
     <inner>
       <h1>inner</h1>
+      { parent.counter++ }
     </inner>
   `)
 
@@ -20,9 +24,17 @@ module.exports = function(test, assert) {
   $ = tag.find
   assert(!$('b'))
   assert.equal($('h1').text(), 'inner')
+  assert.equal(tag.counter, 1)
 
-  tag.update({ flag: true })
+  // hide -> don't execute expressions
+  tag.update({ hide: true })
+  assert.equal(tag.counter, 1)
+
   assert.equal($('b').text(), 'void')
   assert(!$('h1'))
+
+  // show -> expressions work again
+  tag.update({ hide: false })
+  assert.equal(tag.counter, 2)
 
 }

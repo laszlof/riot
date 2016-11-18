@@ -7,7 +7,7 @@ const parseJS = require('./js-parse'),
 // RE
 const RESERVED = 'arguments console document false function instanceof location null self this top true typeof undefined window'.split(' '),
   ATTR_EXPR = /([\w\-]+=)(\{[^}]+\})([\s>])/g,
-  VAR_NAME = /(^|[\!\s\(])+([a-z]\w*)\b\s?/g,
+  VAR_NAME = /(^|[\-\+\!\s\(])+([a-z]\w*)\b\s?/g,
   TAG = /<(\w+-?\w+)([^>]*)>/g,
   EXPR = /\{([^}]+)\}\}?/g
 

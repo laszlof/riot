@@ -8,20 +8,25 @@ module.exports = function(test, assert) {
   // simple loops
   tag = test(`
     <test>
-      <b each={ item in opts.items }>{ item }</b>
-      <span each={ item in opts.items }>{ item * 2 }</span>
+      <div each={ item in opts.items }>
+        <h1>{ item }</h1>
+      </div>
+      <div each={ item in opts.items }>
+        <h2>{ item * 2 }</h2>
+      </div>
     </test>
 
   `, { items: [1, 2, 3] })
 
 
   $ = tag.findAll
-  var els = $('b')
+  var els = $('h1')
   assert.equal(els.length, 3)
   assert.equal(els[0].text(), 1)
   assert.equal(els[1].text(), 2)
 
-  els = $('span')
+
+  els = $('h2')
   assert.equal(els.length, 3)
   assert.equal(els[0].text(), 2)
   assert.equal(els[1].text(), 4)
@@ -29,32 +34,32 @@ module.exports = function(test, assert) {
   // push
   items = tag.opts.items
   items.push(4)
-  els = $('b')
+  els = $('h1')
   assert.equal(els.length, 4)
   assert.equal(els[3].text(), 4)
-  assert.equal($('span').length, 4)
+  assert.equal($('h2').length, 4)
 
   // unshift
   items.unshift(-1)
-  els = $('b')
+  els = $('h1')
   assert.equal(els.length, 5)
   assert.equal(els[0].text(), -1)
 
   // sort desc
   items.sort(function(a, b) { return a < b })
-  els = $('b')
+  els = $('h1')
   assert.equal(els[0].text(), 4)
   assert.equal(els[4].text(), -1)
 
   // splice
   items.splice(1, 2)
-  els = $('b')
+  els = $('h1')
   assert.equal(els.length, 3)
   assert.equal(els[1].text(), 1)
 
   // remove
   items.remove(1)
-  els = $('b')
+  els = $('h1')
   assert.equal(els.length, 2)
   assert.equal(els[1].text(), -1)
 
@@ -62,7 +67,7 @@ module.exports = function(test, assert) {
   // change array
   tag.opts.items = [10, 20, 30]
   tag.update()
-  els = $('span')
+  els = $('h2')
   assert.equal(els.length, 3)
   assert.equal(els[1].text(), 40)
 
@@ -166,5 +171,26 @@ module.exports = function(test, assert) {
 
   els = tag.findAll('th')
   assert.equal(els.length, 3)
+
+
+  // cleanup test
+  tag = test(`
+    <loop-cleanup>
+      <div each={ item in opts.items }>{ opts.counter++ }</div>
+    </loop-cleanup>
+
+  `, {
+    items: [1, 2],
+    counter: 0
+  })
+
+  var opts = tag.opts
+
+  assert.equal(opts.counter, 2)
+  tag.update()
+  assert.equal(opts.counter, 4)
+  opts.items.remove(1)
+  tag.update()
+  assert.equal(opts.counter, 5)
 
 }
