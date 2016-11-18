@@ -181,18 +181,10 @@ function Tag(tag_name, root, script) {
   }
 
   this.generate = function() {
-    var html = makeHTML()
+    const html = makeHTML().replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim()
 
-    // console.info(html)
-    // console.info(fns)
-
-    return util.format("riot.tag('%s', '%s',\n\n[%s],\n\nfunction(self, opts) {\n\t%s\n})\n",
-      tag_name,
-      html.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim(),
-      fns.join(',\n'),
-      script
-    )
-
+    return `riot.tag('${tag_name}', '${html}',\n\n[${fns.join(',\n')}]` +
+      (script ? `,\n\nfunction(self, opts) {\n\t${script}\n})\n` : ')\n')
   }
 
 }

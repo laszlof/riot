@@ -75,6 +75,7 @@ tag = test(`
   </inner>
 `)
 
+
 $ = tag.find
 assert(!$('b'))
 assert.equal($('h1').text(), 'inner')
@@ -92,6 +93,7 @@ tag = test(`
   </test>
 
 `, { items: [1, 2, 3] })
+
 
 $ = tag.findAll
 var els = $('b')
@@ -231,8 +233,6 @@ assert.equal(els.length, 2)
 assert.equal(els[0].text(), 'd1')
 
 
-
-
 // table
 tag = test(`
   <test>
@@ -248,3 +248,5 @@ els = tag.findAll('th')
 assert.equal(els.length, 3)
 
 console.info(`All passed in ${Date.now() - start}ms`)
+
+
