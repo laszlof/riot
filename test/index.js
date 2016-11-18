@@ -13,6 +13,8 @@ tag = test(`
   <test class={ a: 1, b: true, c: false }>
     <h1>{ upper(title) }</h1>
     <em>a { b: true, c: true } d</em>
+    <input checked={ false }>
+    <textarea disabled={ null }></textarea>
     <div id="a { opts.title }">{{ opts.body }} b</div>
 
     <script>
@@ -34,6 +36,10 @@ assert.equal($('h1').text(), 'TEST')
 assert.equal($('em').text(), 'a b c d')
 assert.equal($('div').html(), '<b>a</b> b')
 assert.equal($('div').attr('id'), 'a test')
+
+// boolean attributes
+assert(!$('input').attributes[0])
+assert.strictEqual($('textarea').attr('disabled'), '')
 
 
 // root attributes

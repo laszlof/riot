@@ -1,13 +1,11 @@
-riot.tag('test-tag', '<test-tag> <h3>Parent</h3> <test-attr class="main" if="$0"></test-attr> <p>$1</p> </test-tag>',
+riot.tag('test-tag', '<test-tag> <input type="checkbox" checked="$0"> </test-tag>',
 
-[function(){return this.flag},
-function(){return ["Test ",{ _html:  this.body }]}],
+[function(){return !this.flag}],
 
 function(self, opts) {
-	this.body = opts.body
-    setTimeout(function() {
-      self.update({ flag: true, body: 'Big <strong>fat</strong>' })
-    }, 10)
+	setTimeout(function() {
+      self.update({ flag: 1 })
+    }, 500)
 })
 riot.tag('test-attr', '<test-attr class="$0" data-test="bar"> <h3>$1</h3></test-attr>',
 

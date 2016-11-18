@@ -108,10 +108,10 @@ function Block(tag, fns, root, item) {
 
       } else {
         expr.push(function() {
-          var val = fn.call(tag, item)
+          var val = fn.call(tag, item),
+            el = node.changed || node
 
-          // node.changed == changed parent node for custom tags
-          ;(node.changed || node).setAttribute(name, toValue(val))
+          val === false ? el.removeAttribute(name) : el.setAttribute(name, toValue(val))
         })
       }
 

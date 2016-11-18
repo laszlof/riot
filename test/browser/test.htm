@@ -1,15 +1,12 @@
 
 <test-tag>
 
-  <h3>Parent</h3>
-  <test-attr class="main" if={ flag }/>
-  <p>Test {{ body }}</p>
+  <input type="checkbox" checked={ !!flag }>
 
   <script>
-    this.body = opts.body
     setTimeout(function() {
-      self.update({ flag: true, body: 'Big <strong>fat</strong>' })
-    }, 10)
+      self.update({ flag: 1 })
+    }, 500)
   </script>
 </test-tag>
 
