@@ -5,7 +5,7 @@ const test = require('./lib/tag-test'),
   start = Date.now()
 
 
-require('./expressions')(test, assert)
+require('./basics')(test, assert)
 require('./conditionals')(test, assert)
 require('./loops')(test, assert)
 

@@ -84,19 +84,20 @@ function closest(arr, index) {
 }
 
 function getScript(root) {
-  var redundant = [],
+
+  var comments = [],
     script = ''
 
   dom.walk(root, function(el, level) {
-    if (el.nodeType == 8) redundant.push(el)
+    if (el.nodeType == 8) comments.push(el)
     else if (el.tagName == 'SCRIPT') {
       if (!script && level == 1) script = dom.html(el)
-      redundant.push(el)
+      comments.push(el)
       return false
     }
   })
 
-  redundant.forEach(function(el) {
+  comments.forEach(function(el) {
     el.parentNode.removeChild(el)
   })
 
@@ -149,7 +150,7 @@ function Tag(tag_name, root, script) {
   }
 
 
-  // { thread, i in threads.slice(1) } -> { item: 'thread', index: 'i', fn: threads.slice(1) }
+  // { thread, i in threads.slice(1) } -> thread, i
   function parseEach(el) {
     const str = el.tagName && el.getAttribute('each')
     if (isExpr(str)) {
@@ -186,6 +187,7 @@ function Tag(tag_name, root, script) {
   this.generate = function() {
     const html = makeHTML().replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim()
 
+    // this looks ugly, sorry
     return `riot.tag('${tag_name}', '${html}',\n\n[${fns.join(',\n')}]` +
       (script ? `,\n\nfunction(self, opts) {\n\t${script}\n})\n` : ')\n')
   }
@@ -196,13 +198,13 @@ module.exports = function(html) {
   html = quoteExpressions(closeTags(html))
   const doc = dom.parse(html.trim())
 
-  var js = '', index = 0, node
+  var ret = '', index = 0, node
 
   while (node = doc.childNodes.item(index++)) {
     var name = (node.tagName || '').toLowerCase()
 
     if (name == 'script') {
-      js += dom.html(node)
+      ret += dom.html(node)
 
     } else if (name) {
       var root = dom.create('div')
@@ -211,9 +213,9 @@ module.exports = function(html) {
       var script = getScript(root),
         tag = new Tag(name, root, script)
 
-      js += tag.generate()
+      ret += tag.generate()
     }
   }
 
-  return js
+  return ret
 }

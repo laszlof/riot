@@ -4,7 +4,7 @@ var $, tag
 
 module.exports = function(test, assert) {
 
-  // basic expressions
+  // expressions
   tag = test(`
     <test class={ a: 1, b: true, c: false }>
       <h1>{ upper(title) }</h1>
@@ -61,5 +61,23 @@ module.exports = function(test, assert) {
   assert.equal(el.attr('class'), 'a b z')
   assert.equal(el.attr('data-id'), 'test')
   assert.equal(el.attr('id'), 'zoo')
+
+
+  // child tags via `tags` property
+  tag = test(`
+    <base-tag>
+      <child1/>
+      <child1/>
+      <child2/>
+    </base-tag>
+
+    <child1></child1>
+    <child2></child2>
+
+  `)
+
+  assert.equal(tag.tags.child1.length, 2)
+  assert(!tag.tags.child2.length)
+  assert(!!tag.tags.child2)
 
 }
