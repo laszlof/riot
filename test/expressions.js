@@ -38,6 +38,11 @@ module.exports = function(test, assert) {
   assert.strictEqual($('textarea').attr('disabled'), '')
 
 
+  // try overriding update
+  assert.throws(function() {
+    tag.update = 1
+  })
+
   // root attributes
   tag = test(`
     <test>

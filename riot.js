@@ -2,7 +2,7 @@
 
 /* Container for loops, custom tags and conditionals */
 
-function Block(tag, fns, root, item) {
+function Block(tag, fns, root, addBlock, args) {
 
   var ifs = [],
     loops = [],
@@ -14,25 +14,25 @@ function Block(tag, fns, root, item) {
   walk(root, function(node) {
 
     // if
-    attr = remAttr(node, 'if')
+    var attr = remAttr(node, 'if')
     var cond = getFunction(attr)
-    if (cond) { ifs.push(new IF(node, tag, cond, item)); return false }
+    if (cond) { ifs.push(new IF(node, tag, cond, addBlock, args)); return false }
 
     // each
-    var attr = remAttr(node, 'each'), query = getFunction(attr)
+    attr = remAttr(node, 'each'), query = getFunction(attr)
     if (query) { loops.push([query, node]); return false }
 
     // custom tag
     var name = getTagName(node)
     if (node != tag.root && isCustom(name)) {
-      riot.mount(name, node, item); return false
+      tags.push(new Tag(name, node, getOpts(node))); return false
     }
 
     // body expression
     var fn = getFunction(node.nodeValue)
 
     fn && expr.push(function() {
-      var arr = fn.call(tag, item),
+      var arr = fn.apply(tag, args),
         val = toValue(arr)
 
       if (hasHTML(arr)) {
@@ -49,8 +49,8 @@ function Block(tag, fns, root, item) {
   })
 
   // loops must be constructed after walk()
-  loops = loops.map(function(args) {
-    return new Loop(args[0], args[1], tag, fns, item)
+  loops = loops.map(function(arr) {
+    return new Loop(arr[0], arr[1], tag, fns, addBlock, args)
   })
 
 
@@ -60,7 +60,7 @@ function Block(tag, fns, root, item) {
     })
 
     each(expr, function(fn) {
-      fn.call(tag, item)
+      fn.apply(tag, args)
     })
 
   }
@@ -83,15 +83,34 @@ function Block(tag, fns, root, item) {
     node.removeAttribute(name)
 
     node.addEventListener(name.slice(2), function(e) {
-      var fn = getter.call(tag, e, item)
+      var e_args = [e].concat(args),
+        fn = getter.apply(tag, e_args)
 
       if (fn) {
-        var ret = fn.call(tag, e, item)
+        var ret = fn.apply(tag, e_args)
         tag.update()
         return ret
       }
     })
   }
+
+
+  function getOpts(node) {
+    var opts = {}, rems = []
+
+    each(node.attributes, function(attr) {
+      var fn = getFunction(attr.value)
+      opts[attr.name] = fn ? fn.apply(tag, args) : attr.value
+      fn && rems.push(attr.name)
+    })
+
+    each(rems, function(name) {
+      node.removeAttribute(name)
+    })
+
+    return opts
+  }
+
 
   function parseAttributes(node) {
 
@@ -108,7 +127,7 @@ function Block(tag, fns, root, item) {
 
       } else {
         expr.push(function() {
-          var val = fn.call(tag, item),
+          var val = fn.apply(tag, args),
             el = node.changed || node
 
           val === false ? el.removeAttribute(name) : el.setAttribute(name, toValue(val))
@@ -170,7 +189,7 @@ function getTagName(node) {
 }
 
 function isCustom(name) {
-  return name && !!tags[name.toLowerCase()]
+  return name && !!defs[name.toLowerCase()]
 }
 
 function extend(obj, from) {
@@ -184,15 +203,6 @@ function mkdom(html) {
   var el = document.createElement('template')
   el.innerHTML = html.trim()
   return (el.content || el).firstChild
-}
-
-// returns node attributes as object
-function attr(root) {
-  var data = {}
-  each(root.attributes, function(attr) {
-    data[attr.name] = attr.value
-  })
-  return data
 }
 
 // walk trough a DOM tree
@@ -220,7 +230,7 @@ function objToString(obj) {
 }
 
 function hasHTML(arr) {
-  for (var i = 0, el; (el = arr[i]); i++) {
+  for (var i = 0, el; (el = (arr || [])[i]); i++) {
     if (el._html) return true
   }
 }
@@ -240,26 +250,26 @@ function toValue(val) {
 
 
 // makes a root node mountable
-function IF(node, tag, fn, item) {
+function IF(node, tag, fn, addBlock, args) {
 
   // invisible marker node
   var stub = insertBefore(node, emptyNode()),
     mounted
 
   this.update = function() {
-    return fn.call(tag, item) ? mount() : removeNode(node)
+    return fn.apply(tag, args) ? mount() : removeNode(node)
   }
 
   function mount() {
-    !mounted && tag.addBlock(node, item)
+    !mounted && addBlock(node, args)
     mounted = insertBefore(stub, node)
   }
 
 }
 // A mapping of items and corresponding dom nodes
-function Loop(query, node, tag, fns, item) {
+function Loop(query, node, tag, fns, addBlock, args) {
 
-  var items = query.call(tag, item)
+  var items = query.apply(tag, args)
 
   // insert hidden start node as marker
   var last = node.previousSibling
@@ -279,7 +289,7 @@ function Loop(query, node, tag, fns, item) {
   }
 
   this.update = function() {
-    var arr = query.call(tag, item)
+    var arr = query.apply(tag, args)
     if (arr != items) changeItems(arr)
   }
 
@@ -292,13 +302,13 @@ function Loop(query, node, tag, fns, item) {
   function append(obj, i) {
     var node = add(obj, last)
     nodes.push(node)
-    tag.addBlock(node, obj)
+    addBlock(node, args.concat([obj]))
   }
 
   function prepend(obj) {
     var node = add(obj, start.nextSibling)
     nodes.unshift(node)
-    tag.addBlock(node, obj)
+    addBlock(node, args.concat([obj]))
   }
 
   function syncable(items) {
@@ -366,24 +376,28 @@ function Loop(query, node, tag, fns, item) {
 }
 
 
-// The globals
-var riot = window.riot = {}
-
-var tags = {}
+// window.riot
+var riot = window.riot = {},
+  all_tags = [],
+  defs = {}
 
 // register
 riot.tag = function(name, html, fns, impl) {
-  tags[name] = [html, fns, impl]
+  defs[name] = [html, fns, impl]
 }
 
 // mount
 riot.mount = function(name, to, opts) {
-  var def = tags[name]
+  var tag = new Tag(name, to, opts)
+  all_tags.push(tag)
+  return tag.update()
+}
 
-  if (def) {
-    var tag = new Tag(name, def[0], def[1], def[2], opts)
-    return tag.mount(to)
-  }
+// update all
+riot.update = function() {
+  each(all_tags, function(tag) {
+    tag.update()
+  })
 }
 
 
@@ -391,49 +405,48 @@ riot.mount = function(name, to, opts) {
 
 // Custom tag
 
-function Tag(tag_name, html, fns, impl, opts) {
+function Tag(tag_name, to, opts) {
 
-  this.opts = opts = opts || {}
+  // tag found?
+  var def = defs[tag_name]
+  if (!def) throw 'No such tag ' + tag_name
 
-  var self = this,
-    blocks = [],
-    root
+  var root = this.root = mkdom(def[0]),
+    self = this,
+    blocks = []
 
 
-  this.addBlock = function(node, item) {
-    var block = new Block(self, fns, node, item)
+  function addBlock(node, args) {
+    var block = new Block(self, def[1], node, addBlock, args)
     blocks.push(block)
   }
 
+  // init
+  this.opts = opts
+  var impl = def[2]
+  impl && impl.call(self, self, opts)
+  addBlock(root, [])
+
+
   // mount
-  this.mount = function(to) {
-    if (root) return
+  if (to) {
 
-    root = self.root = mkdom(html)
-    impl && impl.call(self, self, opts)
-    self.addBlock(root, opts)
+    // move to new parent
+    if (getTagName(to) == tag_name) {
+      // copyAttributes(root, to)
+      moveChildren(root, to)
+      root.changed = to
+      root = to
 
-    if (to) {
-
-      // move to new parent
-      if (getTagName(to) == tag_name) {
-        // copyAttributes(root, to)
-        moveChildren(root, to)
-        root.changed = to
-        root = to
-
-      // replace node
-      } else {
-        // copyAttributes(to, root)
-        to.parentNode.replaceChild(root, to)
-      }
+    // replace node
+    } else {
+      // copyAttributes(root, to)
+      to.parentNode.replaceChild(root, to)
     }
 
-    return self.update()
   }
 
-  // execute blocks
-  this.update = function(data) {
+  function update(data) {
     if (data) extend(self, data)
 
     each(blocks, function(block) {
@@ -443,4 +456,13 @@ function Tag(tag_name, html, fns, impl, opts) {
     return self
   }
 
-}}()
+  Object.defineProperty(self, 'update', {
+    get: function() { return update },
+
+    set: function(value) {
+      throw 'Cannot set update property'
+    }
+  })
+
+}
+}()

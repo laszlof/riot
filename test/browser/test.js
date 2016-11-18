@@ -10,11 +10,7 @@ function(self, opts) {
 riot.tag('test-attr', '<test-attr class="$0" data-test="bar"> <h3>$1</h3></test-attr>',
 
 [function(){return ["something ", this.opts.class + 'joo' ," ", this.opts.class ]},
-function(){return ["Child ", this.opts.class ]}],
-
-function(self, opts) {
-	
-})
+function(){return ["Child ", this.opts.class ]}])
 riot.tag('test-form', '<test-form> <textarea>$0</textarea> <input value="$0"> </test-form>',
 
 [function(){return this.val}],
@@ -32,10 +28,11 @@ function(self, opts) {
     }.bind(this)
     setTimeout(this.set, 1000)
 })
-riot.tag('test-table', '<test-table> <table border="1"> <tr><th each="$0">$1</th></tr> <tr><td each="$0">$1</td></tr> </table> <table border="1"> <tr each="$0"> <td>$1</td> <td>$2</td> </tr> </table> </test-table>',
+riot.tag('test-table', '<test-table> <table border="1"> <tr><th each="$0">$1</th></tr> <tr><td each="$2">$1</td></tr> </table> <table border="1"> <tr each="$2"> <td>$1</td> <td>$3</td> </tr> </table> </test-table>',
 
 [function(){return this.rows},
 function(cell){return cell},
+function(cell){return this.rows},
 function(cell){return [ cell ," another"]}],
 
 function(self, opts) {
