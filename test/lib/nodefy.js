@@ -13,6 +13,9 @@ Object.defineProperty(SDOM.Element.prototype, 'innerHTML', {
     var frag = dom.parse(html)
     while (this.firstChild) this.removeChild(this.firstChild)
     this.appendChild(frag)
+  },
+  get: function() {
+    return dom.html(this)
   }
 })
 

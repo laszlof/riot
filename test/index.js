@@ -7,7 +7,6 @@ const test = require('./lib/tag-test'),
 var $, tag
 
 
-
 // expressions
 tag = test(`
   <test class={ a: 1, b: true, c: false }>
@@ -145,33 +144,52 @@ assert.equal(els.length, 3)
 assert.equal(els[1].text(), 40)
 
 
-
 // nested loops
 tag = test(`
-  <test>
+  <nested-loops>
     <div each={ item in opts.items }>
-      <h3>{ item.title }</h3>
-      <b each={ num in item.arr }>{ num }</b>
+      <h1>v{ item.el }</h1>
+
+      <div each={ second in item.arr }>
+        <h2>{ item.el }-{ second }</h2>
+
+        <div each={ third in second.arr }>
+          <h3>{ second.value }-{ third }</h3>
+        </div>
+
+      </div>
+
     </div>
-  </test>
+  </nested-loops>
 `, {
   items: [
-    { title: '1st', arr: [1, 1, 1] },
-    { title: '2nd', arr: [2, 2, 2] },
-    { title: '3rd', arr: [3, 3, 3] },
+    { el: 1, arr: [10, 10, 10] },
+    { el: 2, arr: [20, 20, { value: 10, arr: [30, 40, 50] } ] },
+    { el: 3 },
   ]
 })
 
+// 1st level
+els = tag.findAll('h1')
+assert.equal(els.length, 3)
+assert.equal(els[0].text(), 'v1')
+assert.equal(els[1].text(), 'v2')
+
+// 2nd level
+els = tag.findAll('h2')
+assert.equal(els.length, 6)
+assert.equal(els[0].text(), '1-10')
+assert.equal(els[3].text(), '2-20')
+
+// 3rd level
 els = tag.findAll('h3')
 assert.equal(els.length, 3)
-assert.equal(els[0].text(), '1st')
-assert.equal(els[1].text(), '2nd')
+assert.equal(els[0].text(), '10-30')
+assert.equal(els[1].text(), '10-40')
 
-els = tag.findAll('b')
-assert.equal(els.length, 9)
-assert.equal(els[0].text(), 1)
-assert.equal(els[3].text(), 2)
-assert.equal(els[6].text(), 3)
+
+// TODO: manipulation
+
 
 
 // table

@@ -5,16 +5,22 @@ const parseJS = require('./js-parse'),
   dom = require('./dom')
 
 // RE
-const RESERVED = 'console document false function instanceof location null self this top true typeof undefined window'.split(' '),
+const RESERVED = 'arguments console document false function instanceof location null self this top true typeof undefined window'.split(' '),
   ATTR_EXPR = /([\w\-]+=)(\{[^}]+\})([\s>])/g,
   VAR_NAME = /(^|[\!\s\(])+([a-z]\w*)\b\s?/g,
   TAG = /<(\w+-?\w+)([^>]*)>/g,
   EXPR = /\{([^}]+)\}\}?/g
 
 
+function trimArgs(arr) {
+  return arr.filter(function(el) {
+    return !!el
+  }).join(',')
+}
+
 
 function setThis(expr, args) {
-  args = args ? args.split(/\s*,\s*/) : []
+  args = args ? args.split(',') : []
   return expr.replace(VAR_NAME, function(match, beg, key) {
     if (RESERVED.includes(key) || args.includes(key)) return match
     return beg + 'this.' + key.trimLeft()
@@ -103,10 +109,10 @@ function Tag(tag_name, root, script) {
     loop_args = [],
     fns = []
 
-  function pushFn(expr, args) {
+  function pushFn(expr) {
     if (!expr || !expr.includes('{') || !expr.includes('}')) return
 
-    var fn = makeFn(expr, args),
+    var fn = makeFn(expr, trimArgs(loop_args)),
       i = fn_index[fn]
 
     if (i === undefined) {
@@ -117,11 +123,11 @@ function Tag(tag_name, root, script) {
   }
 
 
-  function setEventHandler(attr, val, args) {
+  function setEventHandler(attr, val) {
     if (!isExpr(val) || !val.includes('(') || !attr.name.slice(0, 2).toLowerCase() == 'on') return
 
     // toggle('active') --> this.toggle('active', e, thread, i)
-    args = 'e' + (args ? ', ' : '') + args
+    const args = trimArgs(['e'].concat(loop_args))
     var body = setThis(val.slice(1, -1).trim(), args).replace(')', ', ' + args + ')')
 
     fns.push(`function(${args}) { return ${ body } }`)
@@ -131,12 +137,12 @@ function Tag(tag_name, root, script) {
   }
 
 
-  function setAttributes(arr, args) {
+  function setAttributes(arr) {
     arr && arr.forEach(function(attr) {
       var val = attr.value
 
-      if (!setEventHandler(attr, val, args)) {
-        var i = pushFn(val, args)
+      if (!setEventHandler(attr, val)) {
+        var i = pushFn(val)
         if (i >= 0) attr.value = '$' + i
       }
     })
@@ -144,30 +150,29 @@ function Tag(tag_name, root, script) {
 
 
   // { thread, i in threads.slice(1) } -> { item: 'thread', index: 'i', fn: threads.slice(1) }
-  function parseEach(el, args) {
+  function parseEach(el) {
     const str = el.tagName && el.getAttribute('each')
     if (isExpr(str)) {
       const els = str.slice(1, -1).trim().split(/\s+in\s+/)
-      el.setAttribute('each', '$' + pushFn('{ ' + els[1] + ' }', args))
-      // el.setAttribute('args', els[0])
+      el.setAttribute('each', '$' + pushFn('{ ' + els[1] + ' }'))
       return els[0]
     }
   }
 
   function makeHTML() {
+
     dom.walk(root, function(el, level) {
 
       // each attribute
-      var args = closest(loop_args, level) || '',
-        each_args = parseEach(el, args)
-      if (each_args) args = loop_args[level] = each_args
+      const each_args = parseEach(el)
+      if (each_args) loop_args[level] = each_args
 
       // other attributes
-      setAttributes(el.attributes, args)
+      setAttributes(el.attributes)
 
       var text = el.nodeValue && el.nodeValue.trim()
 
-      const i = pushFn(text, args)
+      const i = pushFn(text)
       if (i >= 0) el.nodeValue = '$' + i
 
     })

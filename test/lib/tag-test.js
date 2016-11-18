@@ -14,11 +14,18 @@ function requireString(src) {
 function importTag(html) {
   const def = `module.exports = function(riot) { ${compile(html)} }`
   requireString(def)(riot)
+  return def
 }
 
 function $(el) {
   el.text = function() {
-    return el.firstChild.nodeValue
+    var node = el.firstChild, str = ''
+
+    do {
+      str += node.nodeValue
+    } while(node = node.nextSibling)
+
+    return str.trim()
   }
 
   el.attr = function(name) {
@@ -49,11 +56,15 @@ function findAll(root, name) {
   return ret
 }
 
-module.exports = function(html, data) {
-  importTag(html)
-
+module.exports = function(html, data, debug) {
   const tag_name = html.trim().split(/[ >]/)[0].slice(1),
+    def = importTag(html, debug && tag_name),
     tag = riot.mount(tag_name, null, data)
+
+  if (debug) {
+    console.info(def)
+    console.info(tag.root.innerHTML)
+  }
 
   tag.find = function(query) {
     return find(tag.root, query)
