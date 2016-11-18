@@ -4,7 +4,9 @@ const test = require('./lib/tag-test'),
   assert = require('assert'),
   start = Date.now()
 
-var $, tag
+
+// commonly used variables
+var $, tag, items
 
 
 // expressions
@@ -104,7 +106,7 @@ assert.equal(els[0].text(), 2)
 assert.equal(els[1].text(), 4)
 
 // push
-var items = tag.opts.items
+items = tag.opts.items
 items.push(4)
 els = $('b')
 assert.equal(els.length, 4)
@@ -188,7 +190,13 @@ assert.equal(els[0].text(), '10-30')
 assert.equal(els[1].text(), '10-40')
 
 
-// TODO: manipulation
+// nested loop manipulation
+items = tag.opts.items[1].arr
+items.unshift(99)
+els = tag.findAll('h2')
+assert.equal(els.length, 7)
+assert.equal(els[3].text(), '2-99')
+
 
 
 
