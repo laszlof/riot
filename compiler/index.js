@@ -165,7 +165,10 @@ function Tag(tag_name, root, script) {
 
       // each attribute
       const each_args = parseEach(el)
-      if (each_args) loop_args[level] = each_args
+      if (each_args) {
+        loop_args[level] = each_args
+        loop_args.splice(level + 1, loop_args.length)
+      }
 
       // other attributes
       setAttributes(el.attributes)
