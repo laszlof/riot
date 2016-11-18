@@ -63,7 +63,6 @@ assert.equal(el.attr('data-id'), 'test')
 assert.equal(el.attr('id'), 'zoo')
 
 
-
 // conditionals
 tag = test(`
   <test>
@@ -196,6 +195,40 @@ items.unshift(99)
 els = tag.findAll('h2')
 assert.equal(els.length, 7)
 assert.equal(els[3].text(), '2-99')
+
+
+
+// custom tag loops
+tag = test(`
+  <tag-loop>
+    <looped-tag each={ item in opts.items } item={ item }/>
+  </tag-loop>
+
+  <looped-tag>
+    <h2>{ opts.item.title }</h2>
+    <deep-nested each={ item in opts.item.arr } item={ item }/>
+  </looped-tag>
+
+  <deep-nested>
+    <h3>{ opts.item.title }</h3>
+  </deep-nested>
+`, {
+  items: [
+    { title: 't1', arr: [{ title: 'd1' }, { title: 'd2' }] },
+    { title: 't2' },
+    { title: 't3' }
+  ]
+})
+
+
+$ = tag.findAll
+els = $('h2')
+assert.equal(els.length, 3)
+assert.equal(els[0].text(), 't1')
+
+els = $('h3')
+assert.equal(els.length, 2)
+assert.equal(els[0].text(), 'd1')
 
 
 

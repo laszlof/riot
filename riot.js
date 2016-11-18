@@ -414,18 +414,17 @@ function Tag(tag_name, html, fns, impl, opts) {
     self.addBlock(root, opts)
 
     if (to) {
-      extend(opts, attr(to))
 
       // move to new parent
       if (getTagName(to) == tag_name) {
-        copyAttributes(root, to)
+        // copyAttributes(root, to)
         moveChildren(root, to)
         root.changed = to
         root = to
 
       // replace node
       } else {
-        copyAttributes(to, root)
+        // copyAttributes(to, root)
         to.parentNode.replaceChild(root, to)
       }
     }
