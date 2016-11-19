@@ -63,21 +63,24 @@ module.exports = function(test, assert) {
   assert.equal(el.attr('id'), 'zoo')
 
 
-  // child tags via `tags` property
+  // tags & refs
   tag = test(`
     <base-tag>
-      <child1/>
-      <child1/>
-      <child2/>
+      <child1 name="a"/>
+      <child1 id="b"/>
+      <child1 each={ el in opts.items }/>
+      <child2 name="b"/>
     </base-tag>
 
-    <child1></child1>
+    <child1></child1>,
     <child2></child2>
 
-  `)
+  `, { items: [1, 2] })
 
-  assert.equal(tag.tags.child1.length, 2)
-  assert(!tag.tags.child2.length)
-  assert(!!tag.tags.child2)
+  assert.equal(tag.tags.child1.length, 4)
+  assert.equal(typeof tag.tags.child2.update, 'function')
+
+  assert.equal(tag.refs.b.length, 2)
+  assert.equal(tag.refs.a.nodeType, 1)
 
 }
