@@ -28,8 +28,4 @@ function mkdom(html) {
   return dom.parse(html).firstChild
 }
 
-function moveChildren(from, to) {
-  while (from.childNodes.item(0)) to.appendChild(from.firstChild)
-}
-
 module.exports = riot

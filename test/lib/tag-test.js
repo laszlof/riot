@@ -62,7 +62,7 @@ module.exports = function(html, data, debug) {
     tag = riot.mount(tag_name, null, data)
 
   if (debug) {
-    console.info(def)
+    // console.info(def)
     console.info(tag.root.innerHTML)
   }
 

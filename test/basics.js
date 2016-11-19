@@ -85,4 +85,36 @@ module.exports = function(test, assert) {
   assert.equal(tag.refs.b.length, 2)
   assert.equal(tag.refs.a.nodeType, 1)
 
+
+  // yield
+  tag = test(`
+    <parent>
+      <child id="girl">
+        <h2>{ title }</h2>
+        <span>{ opts.val }</span>
+      </child>
+      <script>
+        this.title = 'test'
+      </script>
+    </parent>
+
+    <child>
+      <h1>{ title }{ opts.id }</h1>
+      <yield/>
+      <script>
+        this.title = 'child'
+      </script>
+    </child>
+
+  `, { val: 'v1' })
+
+  $ = tag.find
+  assert.equal($('h1').text(), 'childgirl')
+  assert.equal($('h2').text(), 'test')
+  assert.equal($('span').text(), 'v1')
+  assert(!$('yield'))
+
+  tag.update({ title: 'old' })
+  assert.equal($('h2').text(), 'old')
+
 }
