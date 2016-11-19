@@ -4,12 +4,12 @@ const RESERVED = 'arguments console document false function instanceof location 
   VAR_NAME = /(^|[\-\+\!\s\(])+([a-z]\w*)\b\s?/g,
   EXPR = /\{([^}]+)\}\}?/g
 
+
 function trimArgs(arr) {
   return arr.filter(function(el) {
     return !!el
   }).join(',')
 }
-
 
 function setThis(expr, args) {
   args = args ? args.split(',') : []
@@ -43,10 +43,25 @@ function toArray(text, args) {
   return ret
 }
 
-module.exports = function(expr, args_arr) {
-  var args = trimArgs(args_arr),
+function makeFunc(expr, loop_args) {
+  const args = trimArgs(loop_args),
     arr = toArray(expr, args),
     body = arr.length > 1 ? '[' + arr + ']' : arr[0].trim()
 
   return `function(${args}){return ${body}}`
 }
+
+
+// toggle('active') --> this.toggle('active', e, thread, i)
+function eventHandler(expr, loop_args) {
+  const args = trimArgs(loop_args.concat(['e']))
+  var body = setThis(expr.slice(1, -1).trim(), args).replace(')', ', ' + args + ')')
+  return `function(e) { return function(${args}) { return ${ body } } }`
+}
+
+
+module.exports = {
+  eventHandler: eventHandler,
+  make: makeFunc
+}
+

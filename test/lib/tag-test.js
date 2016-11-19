@@ -36,6 +36,10 @@ function $(el) {
     return dom.html(el)
   }
 
+  el.trigger = function(name) {
+    el.dispatchEvent({ type: name })
+  }
+
   return el
 }
 
@@ -62,7 +66,7 @@ module.exports = function(html, data, debug) {
     tag = riot.mount(tag_name, null, data)
 
   if (debug) {
-    // console.info(def)
+    console.info(def)
     console.info(tag.root.innerHTML)
   }
 

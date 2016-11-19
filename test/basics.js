@@ -4,6 +4,7 @@ var $, tag
 
 module.exports = function(test, assert) {
 
+
   // expressions
   tag = test(`
     <test class={ a: 1, b: true, c: false }>
@@ -43,6 +44,7 @@ module.exports = function(test, assert) {
     tag.update = 1
   })
 
+
   // root attributes
   tag = test(`
     <test class={ a: true }>
@@ -57,12 +59,44 @@ module.exports = function(test, assert) {
     </inner>
   `)
 
+
   $ = tag.find
   var el = $('inner')
   assert.equal($('test').attr('class'), 'a')
   assert.equal(el.attr('class'), 'a b z')
   assert.equal(el.attr('data-id'), 'test')
   assert.equal(el.attr('id'), 'zoo')
+
+
+  // event listeners
+  tag = test(`
+    <test onclick={ incr } onmouseup={ add(counter + 2, 'test') }>
+      <h1>{ title }</h1>
+
+      <script>
+        this.counter = 0
+
+        incr() {
+          this.counter++
+        }
+
+        add(am, title) {
+          this.title = title
+          this.counter += am
+        }
+      </script>
+
+    </test>
+  `)
+
+  el = tag.find('test')
+  el.trigger('click')
+  assert.equal(tag.counter, 1)
+
+  el.trigger('mouseup')
+  assert.equal(tag.counter, 4)
+  assert.equal(tag.find('h1').text(), 'test')
+
 
 
   // tags & refs
@@ -92,9 +126,11 @@ module.exports = function(test, assert) {
       <child id="girl">
         <h2>{ title }</h2>
         <span>{ opts.val }</span>
+        <b each={ num in arr }>n{ num }</b>
       </child>
       <script>
         this.title = 'test'
+        this.arr = [1, 2, 3]
       </script>
     </parent>
 
@@ -112,6 +148,7 @@ module.exports = function(test, assert) {
   assert.equal($('h1').text(), 'childgirl')
   assert.equal($('h2').text(), 'test')
   assert.equal($('span').text(), 'v1')
+  assert.equal(tag.findAll('b').length, 3)
   assert(!$('yield'))
 
   tag.update({ title: 'old' })

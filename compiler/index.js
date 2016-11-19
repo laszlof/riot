@@ -74,4 +74,5 @@ function getScript(root) {
   })
 
   return binded(unescape(script.trim()))
+
 }

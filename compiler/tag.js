@@ -1,6 +1,6 @@
 
 const dom = require('./dom'),
-  makeFn = require('./expr')
+  func = require('./func')
 
 module.exports = function(tag_name, root, script) {
 
@@ -11,7 +11,7 @@ module.exports = function(tag_name, root, script) {
   function pushFn(expr) {
     if (!expr || !expr.includes('{') || !expr.includes('}')) return
 
-    var fn = makeFn(expr, loop_args),
+    var fn = func.make(expr, loop_args),
       i = fn_index[fn]
 
     if (i === undefined) {
@@ -21,27 +21,20 @@ module.exports = function(tag_name, root, script) {
     return i
   }
 
-
-  function setEventHandler(attr, val) {
-    if (!isExpr(val) || !val.includes('(') || !attr.name.slice(0, 2).toLowerCase() == 'on') return
-
-    // toggle('active') --> this.toggle('active', e, thread, i)
-    const args = trimArgs(['e'].concat(loop_args))
-    var body = setThis(val.slice(1, -1).trim(), args).replace(')', ', ' + args + ')')
-
-    fns.push(`function(${args}) { return ${ body } }`)
-    attr.value = '$' + (fns.length - 1)
-
-    return true
+  function hasEventHandlerArgs(expr, attr_name) {
+    return isExpr(expr) && expr.includes('(') && attr_name.slice(0, 2).toLowerCase() == 'on'
   }
-
 
   function setAttributes(arr) {
     arr && arr.forEach(function(attr) {
-      var val = attr.value
+      var expr = attr.value
 
-      if (!setEventHandler(attr, val)) {
-        var i = pushFn(val)
+      if (hasEventHandlerArgs(expr, attr.name)) {
+        fns.push(func.eventHandler(expr, loop_args))
+        attr.value = '$' + (fns.length - 1)
+
+      } else {
+        var i = pushFn(expr)
         if (i >= 0) attr.value = '$' + i
       }
     })
