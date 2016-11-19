@@ -6,11 +6,12 @@ const binded = require('./bind'),
 
 // RE
 const ATTR_EXPR = /([\w\-]+=)(\{[^}]+\})([\s>])/g,
-  TAG = /<(\w+-?\w+)([^>]*)>/g
+  TAG = /<(\w+-?\w+)([^>]*)>/g,
+  LT = /<([^[a-z\/])/g
 
 
 module.exports = function(html) {
-  html = quoteExpressions(closeTags(html))
+  html = quoteExpressions(closeTags(escape(html)))
   const doc = dom.parse(html.trim())
 
   var ret = '', index = 0, node
@@ -24,10 +25,7 @@ module.exports = function(html) {
     } else if (name) {
       var root = dom.create('div')
       root.appendChild(node)
-
-      var script = getScript(root),
-        tag = new Tag(name, root, script)
-
+      const tag = new Tag(name, root, getScript(root))
       ret += tag.generate()
     }
   }
@@ -35,6 +33,13 @@ module.exports = function(html) {
   return ret
 }
 
+function escape(html) {
+  return html.replace(LT, '&lt;$1')
+}
+
+function unescape(js) {
+  return js.replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+}
 
 function closeTags(html) {
   return html.replace(TAG, function(match, name, attr) {
@@ -68,5 +73,5 @@ function getScript(root) {
     el.parentNode.removeChild(el)
   })
 
-  return binded(script.trim())
+  return binded(unescape(script.trim()))
 }
