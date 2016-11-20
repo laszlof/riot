@@ -4,7 +4,6 @@ var $, tag
 
 module.exports = function(test, assert) {
 
-
   // expressions
   tag = test(`
     <test class={ a: 1, b: true, c: false }>
@@ -155,5 +154,44 @@ module.exports = function(test, assert) {
 
   tag.update({ title: 'old' })
   assert.equal($('h2').text(), 'old')
+
+
+  // named yield
+  tag = test(`
+    <parent>
+      <some-tag>
+        <h1 name="title">{ title }</h1>
+        <section name="body">
+          <p>{ opts.body }</p>
+        </section>
+      </some-tag>
+      <script>
+        this.title = 'Title'
+      </script>
+    </parent>
+
+    <some-tag>
+      <header>
+        <yield name="title"/>
+      </header>
+      <main>
+        <yield name="body"/>
+      </main>
+    </some-tag>
+
+  `, { body: 'Content' })
+
+  tag.equals(`
+    <some-tag>
+      <header>
+        <h1>Title</h1>
+      </header>
+      <main>
+        <section>
+          <p>Content</p>
+        </section>
+      </main>
+    </some-tag>
+  `)
 
 }

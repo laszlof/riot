@@ -53,7 +53,7 @@ Following improvements were not possible without a bigger architectural change.
 
 5. Performant loops. A call such as `items.push(elem)` will update the array as well as the corresponding DOM collection in place. All array operations: `unshift`, `splice`, `sort`... are executed as fast as it can get.
 
-6. Minified file size will be 5.0kb (current estimate)
+6. Minified file size will be estimated 5.0kb (2.1kb gzipped)
 
 
 
@@ -84,6 +84,10 @@ Due to following changes (on the tag syntax) a new major version number is requi
 3. `preventDefault` is not called by default
 
 4. No hacky `eventObject.item` property
+
+5. `<yield>` operates on the parent context
+
+6. Yield selection happens with named elements. The `to` and `from` attributes are not supported.
 
 
 ## Questions

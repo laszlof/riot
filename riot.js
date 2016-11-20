@@ -62,14 +62,27 @@ function Block(block_root, tag, args) {
 
   // loops must be constructed after walk()
   loops = loops.map(function(arr) {
-    return loop(arr[0], arr[1], tag, args)
+    return new Loop(arr[0], arr[1], tag, args)
   })
 
+  function addBlock(node) {
+    tag.parent.__.addBlock(node)
+  }
   // yields
   each(yields, function(node) {
-    insertNodes(tag.parent.root.firstChild.nextSibling, node, function(child) {
-      tag.parent.__.addBlock(child)
-    })
+    var name = attributes(node).name,
+      root = tag.parent.root
+
+    if (name) {
+      var child = findNode(root, name)
+      child.removeAttribute('name')
+      insertBefore(node, child)
+      addBlock(child)
+
+    } else {
+      insertNodes(root.firstChild.nextSibling, node, addBlock)
+    }
+
     removeNode(node)
   })
 
@@ -201,6 +214,15 @@ function removeNode(node) {
   parent && parent.removeChild(node)
 }
 
+function findNode(root, name) {
+  var ret
+  walk(root, function(node) {
+    if (node.tagName && node.getAttribute('name') == name) ret = node
+    if (ret) return false
+  })
+  return ret
+}
+
 function moveChildren(from, to) {
   while (from.firstChild) to.appendChild(from.firstChild)
 }
@@ -306,14 +328,13 @@ function IF(node, tag, args, test) {
 }
 // A mapping of array items and corresponding dom nodes
 
-function loop(query, node, tag, args) {
+function Loop(query, node, tag, args) {
 
   node.removeAttribute('each')
   args = args || []
 
   var last = node.previousSibling,
     nodes = [],
-    self = {},
     items
 
   if (!last) {
@@ -325,7 +346,7 @@ function loop(query, node, tag, args) {
 
   removeNode(node)
 
-  self.update = function() {
+  this.update = function() {
     var arr = query.apply(tag, args)
 
     // no change
@@ -431,9 +452,8 @@ function loop(query, node, tag, args) {
     })
   }
 
-  self.update()
+  this.update()
 
-  return self
 }
 
 

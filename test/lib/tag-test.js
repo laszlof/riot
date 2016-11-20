@@ -78,6 +78,15 @@ module.exports = function(html, data, debug) {
     return findAll(tag.root, query)
   }
 
+  tag.equals = function(html) {
+    var layout = tag.root.innerHTML
+    if (trim(layout) != trim(html)) throw layout + '\n\n!=\n\n' + html
+  }
+
   return tag
+}
+
+function trim(str) {
+  return str.replace(/\s{2,}/g, ' ')
 }
 
