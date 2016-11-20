@@ -42,12 +42,15 @@ module.exports = function(tag_name, root, script) {
 
 
   // { thread, i in threads.slice(1) } -> thread, i
-  function parseEach(el) {
+  function getLoopArgs(el) {
     const str = el.tagName && el.getAttribute('each')
     if (isExpr(str)) {
       const els = str.slice(1, -1).trim().split(/\s+in\s+/)
+
       el.setAttribute('each', '$' + pushFn('{ ' + els[1] + ' }'))
-      return els[0]
+      var vars = els[0]
+      if (!vars.includes(',')) vars += ', i'
+      return vars
     }
   }
 
@@ -56,7 +59,7 @@ module.exports = function(tag_name, root, script) {
     dom.walk(root, function(el, level) {
 
       // each attribute
-      const each_args = parseEach(el)
+      const each_args = getLoopArgs(el)
       if (each_args) {
         loop_args[level] = each_args
         loop_args.splice(level + 1, loop_args.length)

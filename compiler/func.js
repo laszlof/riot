@@ -12,7 +12,7 @@ function trimArgs(arr) {
 }
 
 function setThis(expr, args) {
-  args = args ? args.split(',') : []
+  args = args ? args.split(/\s*,\s*/) : []
   return expr.replace(VAR_NAME, function(match, beg, key) {
     if (RESERVED.includes(key) || args.includes(key)) return match
     return beg + 'this.' + key.trimLeft()

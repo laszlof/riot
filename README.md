@@ -53,7 +53,7 @@ Following improvements were not possible without a bigger architectural change.
 
 5. Performant loops. A call such as `items.push(elem)` will update the array as well as the corresponding DOM collection in place. All array operations: `unshift`, `splice`, `sort`... are executed as fast as it can get.
 
-6. Riot "Next" is 3.5kb minified and 1.4kb gzipped ATM.
+6. Minified file size will be 5.0kb (current estimate)
 
 
 
@@ -64,11 +64,13 @@ I felt following features were lacking:
 
 2. Supplying arguments for event handlers: `onclick={ setState('active') }`
 
-3. Auto-assign of commonly used variables: `self`, `refs` and `tags`. These are real variables and won't clutter the instance namespace.
+3. Meaningful error messages on the expressions
 
-4. Meaningful error messages on the expressions
+4. Meaning compiler error messages such as "Unbalanced tag". The compiler now traverses the HTML with `simple-dom` having deeper understanding of the layout.
 
-5. Meaning compiler error messages such as "Unbalanced tag". The compiler now traverses the HTML with `simple-dom` having deeper understanding of the layout.
+5. The `<yield>` tag runs on parent context where the code resides and can contain complex constructs like loops and custom tags.
+
+6. Easy to write and quick test suite. Can be run on every file save, which is crucial for enjoyable development flow.
 
 
 
@@ -79,11 +81,9 @@ Due to following changes (on the tag syntax) a new major version number is requi
 
 2. The default extension for tag files is `htm` or `html` because HTML is the actual syntax of writing tags.
 
-3. No support for server side rendering. I haven't seen a succesfull isomorphic application so far. We can make this if there is a real need.
+3. `preventDefault` is not called by default
 
-4. `preventDefault` is not called by default
-
-5. No hacky `eventObject.item` property
+4. No hacky `eventObject.item` property
 
 
 ## Questions
@@ -92,24 +92,12 @@ Due to following changes (on the tag syntax) a new major version number is requi
 
 2. What pre-processors are needed: TypeScript, ES6 ...?
 
-3. Do we need the loop index variable? ie. the `i` on `{ item, i on items }`. It's doable but complex since it must be re-calculated on every change in the array.
-
 
 ## Roadmap
 Not yet done, but required for a release.
 
-1. Simple and solid nested loops as well as handling of complex combinations of `if` and `each`. These make the core architecture that everything else is tied to.
+1. Nested `<style>` tags.
 
-2. Nested `<style>` tags.
-
-3. The `<yield>` tag.
-
-4. Object loops.
-
-5. Compiler support for mixed JS and (multiple) tags
-
-6. A test suite. I'd like to see a lot of small unit tests since the codebase is split into many small functions. Separate suites for node (quick) and phantom.
-
-7. Split into projects: compiler, cli, demo and riot.
+2. Split into projects: compiler, cli, demo and riot.
 
 

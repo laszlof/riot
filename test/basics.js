@@ -48,7 +48,7 @@ module.exports = function(test, assert) {
   // root attributes
   tag = test(`
     <test class={ a: true }>
-      <inner class="z" id="zoo"/>
+      <inner class="z" id="zoo" baz="goo"/>
     </test>
 
     <inner class="{ a: 1, b: 1 } { opts.class }" id={ opts.id || id } data-id={ id }>
@@ -60,8 +60,10 @@ module.exports = function(test, assert) {
   `)
 
 
+
   $ = tag.find
   var el = $('inner')
+
   assert.equal($('test').attr('class'), 'a')
   assert.equal(el.attr('class'), 'a b z')
   assert.equal(el.attr('data-id'), 'test')

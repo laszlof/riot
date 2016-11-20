@@ -5,6 +5,35 @@ var $, tag, items
 
 module.exports = function(test, assert) {
 
+  // object loop
+  tag = test(`
+    <object-loop>
+      <div each={ key, obj in opts.items }>
+        <h1>{ key }</h1>
+        <p>{ obj.desc }</p>
+        <b each={ el in obj.arr }>b{ el }</b>
+      </div>
+    </object-loop>
+
+  `, {
+    items: {
+      a: { desc: 'desc1', arr: [0, 1, 2, 3] },
+      b: { desc: 'desc2', arr: [4, 5, 6] },
+      c: { desc: 'desc3', arr: [7, 8] },
+    }
+  })
+
+  $ = tag.findAll
+  assert.equal($('h1').length, 3)
+  assert.equal($('h1')[0].text(), 'a')
+  assert.equal($('p')[1].text(), 'desc2')
+  assert.equal($('b').length, 9)
+  assert.equal($('b')[4].text(), 'b4')
+
+  tag.opts.items.c.arr.push(9)
+  assert.equal($('b').length, 10)
+
+
   // simple loops
   tag = test(`
     <test>
@@ -24,7 +53,6 @@ module.exports = function(test, assert) {
   assert.equal(els.length, 3)
   assert.equal(els[0].text(), 1)
   assert.equal(els[1].text(), 2)
-
 
   els = $('h2')
   assert.equal(els.length, 3)
@@ -102,6 +130,7 @@ module.exports = function(test, assert) {
   assert.equal(els.length, 3)
   assert.equal(els[0].text(), 'v1')
   assert.equal(els[1].text(), 'v2')
+
 
   // 2nd level
   els = tag.findAll('h2')
