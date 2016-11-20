@@ -87,6 +87,6 @@ module.exports = function(html, data, debug) {
 }
 
 function trim(str) {
-  return str.replace(/\s{2,}/g, ' ')
+  return str.trim().replace(/\s{2,}/g, ' ').replace(/>\s+</g, '><')
 }
 

@@ -19,7 +19,8 @@ self.html = function(root) {
     html = ''
 
   while (next) {
-    html += toString(next)
+    var str = toString(next)
+    html += str // str.trim() ? str + '\n' : ''
     next = next.nextSibling
   }
 
