@@ -23,6 +23,7 @@ function Block(block_root, tag, args) {
 
     // if
     var test = getFunction(attr.if)
+
     if (test) {
       ifs.push(new IF(node, tag, args, function() {
         return test.apply(tag, args)
@@ -68,10 +69,12 @@ function Block(block_root, tag, args) {
   function addBlock(node) {
     tag.parent.__.addBlock(node)
   }
+
   // yields
   each(yields, function(node) {
     var name = attributes(node).name,
-      root = tag.parent.root
+      tmpl = tag.parent.__.tmpl, // on loops
+      root = tmpl ? tmpl.cloneNode(true) : tag.parent.root
 
     if (name) {
       var child = findNode(root, name)
@@ -80,7 +83,8 @@ function Block(block_root, tag, args) {
       addBlock(child)
 
     } else {
-      insertNodes(root.firstChild.nextSibling, node, addBlock)
+      insertNodes(tmpl ? root : root.firstChild.nextSibling, node, addBlock)
+
     }
 
     removeNode(node)
@@ -128,7 +132,7 @@ function Block(block_root, tag, args) {
     node.removeAttribute(name)
 
     node.addEventListener(name.slice(2), function(e) {
-      var e_args = args.concat([e]),
+      var e_args = args ? args.concat([e]) : [e],
         fn = getter.apply(tag, e_args)
 
       if (fn) {
@@ -225,6 +229,7 @@ function findNode(root, name) {
 
 function moveChildren(from, to) {
   while (from.firstChild) to.appendChild(from.firstChild)
+  return to
 }
 
 function insertNodes(from, to, fn) {
@@ -364,6 +369,8 @@ function Loop(query, node, tag, args) {
 
   }
 
+  // for yielding
+  tag.__.tmpl = moveChildren(node, document.createElement('div'))
 
   function addBlock(node, obj, i) {
     tag.__.addBlock(node, args.concat([obj, i]))
@@ -462,9 +469,16 @@ var riot = window.riot = {},
   all_tags = [],
   defs = {}
 
+function injectCSS(css) {
+  var el = document.createElement('style')
+  el.innerText = css
+  document.documentElement.appendChild(el)
+}
+
 // register
-riot.tag = function(name, html, fns, impl) {
+riot.tag = function(name, html, fns, impl, css) {
   defs[name] = [html, fns, impl]
+  if (css) injectCSS(css)
 }
 
 // mount

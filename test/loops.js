@@ -23,6 +23,7 @@ module.exports = function(test, assert) {
     }
   })
 
+
   $ = tag.findAll
   assert.equal($('h1').length, 3)
   assert.equal($('h1')[0].text(), 'a')

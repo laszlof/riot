@@ -1,10 +1,12 @@
 
-const dom = require('./dom'),
-  func = require('./func')
+const func = require('./func'),
+  dom = require('./dom')
 
-module.exports = function(tag_name, root, script) {
+module.exports = function(tag_name, root, extra) {
 
-  const fn_index = {},
+  const script = extra.script,
+    style = extra.style,
+    fn_index = {},
     loop_args = [],
     fns = []
 
@@ -82,8 +84,9 @@ module.exports = function(tag_name, root, script) {
     const html = makeHTML().replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim()
 
     // this looks ugly, sorry
-    return `riot.tag('${tag_name}', '${html}',\n\n[${fns.join(',\n')}]` +
-      (script ? `,\n\nfunction(self, opts) {\n\t${script}\n})\n` : ')\n')
+    return `riot.tag('${tag_name}', '${html}',\n[${fns.join(',\n')}],` +
+      (script ? `\n\nfunction(self, opts) {\n\t${script}\n},\n` : "'',") +
+      "'" + style.trim() + "')\n"
   }
 
 }
