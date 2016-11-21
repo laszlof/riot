@@ -18,27 +18,40 @@ function unescape(js) {
 
 function unindent(src) {
   const indent = src.replace('\n', '').match(/^\s+/)
-  return indent ? src.replace(RegExp('^' + indent[0], 'gm'), '') : src
+  return (indent ? src.replace(RegExp('^' + indent[0], 'gm'), '') : src).trim()
 }
 
 function getBlocks(tag_name, root, opts) {
 
   var removables = [],
     script = '',
-    style = ''
+    style = '',
+    scoped
+
+  function setType(type, value) {
+    if (value) {
+      opts[type] = value;
+      parsers(opts)
+    }
+  }
 
   dom.walk(root, function(el, level) {
     if (el.nodeType == 8) removables.push(el)
 
     if (el.tagName == 'STYLE') {
-      var scoped = el.attributes.filter(function(attr) { return attr.name == 'scoped' }),
-        css = dom.html(el)
+      setType('css', el.getAttribute('type'))
 
-      style += scoped[0] ? scopedCSS(tag_name, css) : css
+      var scope_attr = el.attributes.filter(function(attr) {
+        return attr.name == 'scoped'
+      })
+
+      if (scope_attr[0]) scoped = true
+      style += unindent(dom.html(el))
       removables.push(el)
       return false
 
     } else if (el.tagName == 'SCRIPT') {
+      setType('js', el.getAttribute('type'))
       script += dom.html(el)
       removables.push(el)
       return false
@@ -49,12 +62,15 @@ function getBlocks(tag_name, root, opts) {
     el.parentNode.removeChild(el)
   })
 
+  var css = opts.css ? opts.css(style) : style
+
   return {
-    style: opts.css ? opts.css(unindent(style)) : style,
+    style: scoped ? scopedCSS(tag_name, css) : css,
     script: opts.js(unescape(script.trim()))
   }
 
 }
+
 
 module.exports = function(src, opts, debug) {
   opts = parsers(opts)

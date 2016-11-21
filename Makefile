@@ -2,7 +2,7 @@
 cli=./compiler/cli.js
 riot=test/lib/node-riot.js
 
-current: test
+current: test-compiler
 
 test: node-riot
 	@ node test

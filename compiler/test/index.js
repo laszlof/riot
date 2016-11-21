@@ -18,23 +18,26 @@ assert.equal(tag.script, 'foobar')
 // sass
 tag = compile(`
   <test>
-    <style>
+    <style scoped>
       a
         color: red
     </style>
   </test>
 `, { css: 'sass' }, true)
 
-assert.equal(tag.style, 'a { color: red; }\n')
+assert.equal(tag.style, 'test a{ color: red; }\n')
 
-// babel
+// style type
 tag = compile(`
-  <yo>
-    <script>
-    var add = (a) => a
-    </script>
-  </yo>`, { js: '_es6' }, true)
-// assert.equal(tag.script, 'add = function (a) { return a; }')
+  <test>
+    <style type="sass">
+      a
+        color: red
+    </style>
+  </test>
+`, null, true)
+
+assert.equal(tag.style, 'a { color: red; }\n')
 
 // buble
 tag = compile(`
@@ -46,6 +49,22 @@ tag = compile(`
 
 assert.equal(tag.script, 'add = function (a) { return a; }')
 
+// script type
+tag = compile('<yo><script type="buble">add = (a) => a</script></yo>', null, true)
+assert.equal(tag.script, 'add = function (a) { return a; }')
+
+
+// babel
+tag = compile(`
+  <yo>
+    <script>
+    var add = (a) => a
+    </script>
+  </yo>`, { js: '_es6' }, true)
+// assert.equal(tag.script, 'add = function (a) { return a; }')
+
+
+
 // pug
 tag = compile('yo { title }', { html: 'pug' }, true)
 assert.equal(tag.html, '<yo>$0</yo>')
@@ -54,7 +73,7 @@ assert.equal(tag.html, '<yo>$0</yo>')
 // combined
 tag = compile(`
   test
-    style.
+    style(scoped).
       a
         color: red
 
@@ -67,6 +86,6 @@ tag = compile(`
 
 
 assert.equal(tag.name, 'test')
-assert.equal(tag.style, 'a { color: red; }\n')
+assert.equal(tag.style, 'test a{ color: red; }\n')
 assert.equal(tag.html, '<test><p>$0</p></test>')
 assert.equal(tag.script, 'add = function (a) { return a; }')
