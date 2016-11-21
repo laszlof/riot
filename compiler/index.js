@@ -25,8 +25,7 @@ function getBlocks(tag_name, root, opts) {
 
   var removables = [],
     script = '',
-    style = '',
-    scoped
+    style = ''
 
   function setType(type, value) {
     if (value) {
@@ -40,12 +39,6 @@ function getBlocks(tag_name, root, opts) {
 
     if (el.tagName == 'STYLE') {
       setType('css', el.getAttribute('type'))
-
-      var scope_attr = el.attributes.filter(function(attr) {
-        return attr.name == 'scoped'
-      })
-
-      if (scope_attr[0]) scoped = true
       style += unindent(dom.html(el))
       removables.push(el)
       return false
@@ -65,8 +58,8 @@ function getBlocks(tag_name, root, opts) {
   var css = opts.css ? opts.css(style) : style
 
   return {
-    style: scoped ? scopedCSS(tag_name, css) : css,
-    script: opts.js(unescape(script.trim()))
+    script: opts.js(unescape(script.trim())),
+    style: scopedCSS(tag_name, css)
   }
 
 }
