@@ -3,7 +3,7 @@ cli=./compiler/cli.js
 riot=test/lib/node-riot.js
 
 
-bench:
+bench: node-riot
 	@ node test 100
 
 test: node-riot

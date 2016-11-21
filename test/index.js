@@ -6,10 +6,10 @@ const benchmark = require('./lib/benchmark')(1 * process.argv.slice(-1)[0]),
   start = Date.now()
 
 
-require('./basics')(test, assert)
 require('./conditionals')(test, assert)
-require('./yield')(test, assert)
+require('./basics')(test, assert)
 require('./loops')(test, assert)
+require('./yield')(test, assert)
 
 console.info(`All tests passed in ${Date.now() - start}ms\n`)
 
