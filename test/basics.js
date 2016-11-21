@@ -2,11 +2,11 @@
 // commonly used variables
 var $, tag
 
-module.exports = function(test, assert) {
+module.exports = function(test, assert, suite) {
 
   // expressions
   tag = test(`
-    <test class={ a: 1, b: true, c: false }>
+    <expressions class={ a: 1, b: true, c: false }>
       <h1>{ upper(title) }</h1>
       <em>a { b: true, c: true } d</em>
       <input checked={ false }>
@@ -20,14 +20,14 @@ module.exports = function(test, assert) {
           return str.toUpperCase()
         }
       </script>
-    </test>
+    </expressions>
   `, { 
     body: '<b>a</b>',
     title: 'test'
   })
 
   $ = tag.find
-  assert.equal($('test').attr('class'), 'a b')
+  assert.equal($('expressions').attr('class'), 'a b')
   assert.equal($('h1').text(), 'TEST')
   assert.equal($('em').text(), 'a b c d')
   assert.equal($('div').html(), '<b>a</b> b')
@@ -38,6 +38,7 @@ module.exports = function(test, assert) {
   assert.strictEqual($('textarea').attr('disabled'), '')
 
 
+
   // try overriding update
   assert.throws(function() {
     tag.update = 1
@@ -46,9 +47,9 @@ module.exports = function(test, assert) {
 
   // root attributes
   tag = test(`
-    <test class={ a: true }>
+    <root-attributes class={ a: true }>
       <inner class="z" id="zoo" baz="goo"/>
-    </test>
+    </root-attributes>
 
     <inner class="{ a: 1, b: 1 } { opts.class }" id={ opts.id || id } data-id={ id }>
       <h1>Title</h1>
@@ -63,7 +64,7 @@ module.exports = function(test, assert) {
   $ = tag.find
   var el = $('inner')
 
-  assert.equal($('test').attr('class'), 'a')
+  assert.equal($('root-attributes').attr('class'), 'a')
   assert.equal(el.attr('class'), 'a b z')
   assert.equal(el.attr('data-id'), 'test')
   assert.equal(el.attr('id'), 'zoo')
@@ -71,7 +72,7 @@ module.exports = function(test, assert) {
 
   // event listeners
   tag = test(`
-    <test onclick={ incr } onmouseup={ add(counter + 2, 'test') }>
+    <event-listeners onclick={ incr } onmouseup={ add(counter + 2, 'test') }>
       <h1>{ title }</h1>
 
       <script>
@@ -87,10 +88,10 @@ module.exports = function(test, assert) {
         }
       </script>
 
-    </test>
+    </event-listeners>
   `)
 
-  el = tag.find('test')
+  el = tag.find('event-listeners')
   el.trigger('click')
   assert.equal(tag.counter, 1)
 
@@ -102,12 +103,12 @@ module.exports = function(test, assert) {
 
   // tags & refs
   tag = test(`
-    <base-tag>
+    <tags-and-refs>
       <child1 name="a"/>
       <child1 id="b"/>
       <child1 each={ el in opts.items }/>
       <child2 name="b"/>
-    </base-tag>
+    </tags-and-refs>
 
     <child1></child1>,
     <child2></child2>

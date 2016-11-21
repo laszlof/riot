@@ -60,30 +60,38 @@ function findAll(root, name) {
   return ret
 }
 
-module.exports = function(html, data, debug) {
-  const tag_name = html.trim().split(/[ >]/)[0].slice(1),
-    def = importTag(html, debug && tag_name),
-    tag = riot.mount(tag_name, null, data)
+module.exports = function(benchmark) {
 
-  if (debug) {
-    console.info(def)
-    console.info(tag.root.innerHTML)
+  return function(html, data, debug) {
+    const tag_name = html.trim().split(/[ >]/)[0].slice(1),
+      def = importTag(html, debug && tag_name),
+      tag = riot.mount(tag_name, null, data)
+
+    if (debug) {
+      console.info(def)
+      console.info(tag.root.innerHTML)
+    }
+
+    tag.name = tag_name[0].toUpperCase() + tag_name.slice(1).replace(/\-/g, ' ')
+
+    tag.find = function(query) {
+      return find(tag.root, query)
+    }
+
+    tag.findAll = function(query) {
+      return findAll(tag.root, query)
+    }
+
+    tag.equals = function(html) {
+      var layout = tag.root.innerHTML
+      if (trim(layout) != trim(html)) throw layout + '\n\n!=\n\n' + html
+    }
+
+    benchmark.tags.push(tag)
+
+    return tag
   }
 
-  tag.find = function(query) {
-    return find(tag.root, query)
-  }
-
-  tag.findAll = function(query) {
-    return findAll(tag.root, query)
-  }
-
-  tag.equals = function(html) {
-    var layout = tag.root.innerHTML
-    if (trim(layout) != trim(html)) throw layout + '\n\n!=\n\n' + html
-  }
-
-  return tag
 }
 
 function trim(str) {

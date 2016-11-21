@@ -79,7 +79,7 @@ Due to following changes (on the tag syntax) a new major version number is requi
 
 1. All logic must now be placed inside a `<script>` node.
 
-2. The default extension for tag files is `htm` or `html` because HTML is the actual syntax of writing tags.
+2. The default extension for tag files is `htm` or `html` because HTML is the actual syntax of writing tags. A tag file can contain multiple Riot tags and you can add global JavaScript on script blocks on the root level.
 
 3. `preventDefault` is not called by default
 
@@ -91,6 +91,7 @@ Due to following changes (on the tag syntax) a new major version number is requi
 
 7. The loop variable is required for loops. ie: `{ item in items }` and loop creates no extra "ghost" context.
 
+8. `riot.mount()` returns the mounted tag directly (not an array)
 
 
 ## Questions

@@ -83,6 +83,7 @@ module.exports = function(src, opts, debug) {
   while (node = doc.childNodes.item(index++)) {
     var tag_name = (node.tagName || '').toLowerCase()
 
+    // script outside tag definitions
     if (tag_name == 'script') {
       ret += dom.html(node)
 

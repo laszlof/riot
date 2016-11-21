@@ -13,6 +13,12 @@
   "repository": {
     "url": "https://github.com/riot/riot",
     "type": "git"
+  },
+
+  "devDependencies": {
+    "simple-html-tokenizer": "^0.2.5",
+    "simple-dom": "0.3.2",
+    "benchmark": "^2.1.2"
   }
 
 }

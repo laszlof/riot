@@ -6,13 +6,13 @@ module.exports = function(test, assert) {
 
   // conditionals
   tag = test(`
-    <test>
+    <if-attribute>
       <b if={ hide }>void</b>
       <inner if={ !hide }/>
       <script>
         this.counter = 0
       </script>
-    </test>
+    </if-attribute>
 
     <inner>
       <h1>inner</h1>
@@ -36,5 +36,9 @@ module.exports = function(test, assert) {
   // show -> expressions work again
   tag.update({ hide: false })
   assert.equal(tag.counter, 2)
+
+  tag.bench = function() {
+    tag.update({ hide: !tag.hide })
+  }
 
 }

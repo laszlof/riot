@@ -6,7 +6,7 @@ module.exports = function(test, assert) {
 
   // yield
   tag = test(`
-    <parent>
+    <yield-test>
       <child id="girl">
         <h2>{ title }</h2>
         <span>{ opts.val }</span>
@@ -16,7 +16,7 @@ module.exports = function(test, assert) {
         this.title = 'test'
         this.arr = [1, 2, 3]
       </script>
-    </parent>
+    </yield-test>
 
     <child>
       <h1>{ title }{ opts.id }</h1>
@@ -41,7 +41,7 @@ module.exports = function(test, assert) {
 
   // named yield
   tag = test(`
-    <parent>
+    <named-yield>
       <some-tag>
         <h1 name="title">{ title }</h1>
         <section name="body">
@@ -51,7 +51,7 @@ module.exports = function(test, assert) {
       <script>
         this.title = 'Title'
       </script>
-    </parent>
+    </named-yield>
 
     <some-tag>
       <header>
@@ -80,7 +80,7 @@ module.exports = function(test, assert) {
 
   // yield with loops
   tag = test(`
-    <parent>
+    <yield-loop>
       <child each={ item in items } item={ item }>
         <h2 onclick={ setTitle }>{ title }</h2>
         <p>p2</p>
@@ -93,7 +93,7 @@ module.exports = function(test, assert) {
           this.title = 'changed'
         }
       </script>
-    </parent>
+    </yield-loop>
 
     <child>
       <h1>i-{ opts.item }</h1>
@@ -122,5 +122,9 @@ module.exports = function(test, assert) {
   assert.equal($('h2').text(), 'changed')
 
 
+  tag.bench = function() {
+    tag.items.push('x')
+    tag.items.splice(0, 1)
+  }
 
 }

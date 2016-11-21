@@ -35,16 +35,16 @@ module.exports = function(test, assert) {
   assert.equal($('b').length, 10)
 
 
-  // simple loops
+  // loop manipulation
   tag = test(`
-    <test>
+    <loop-edit>
       <div each={ item in opts.items }>
         <h1>{ item }</h1>
       </div>
       <div each={ item in opts.items }>
         <h2>{ item * 2 }</h2>
       </div>
-    </test>
+    </loop-edit>
 
   `, { items: [1, 2, 3] })
 
@@ -190,11 +190,11 @@ module.exports = function(test, assert) {
 
   // table
   tag = test(`
-    <test>
+    <table-rows>
       <table>
         <tr> <th each={ cell in opts.rows }>{ cell }</th></tr>
       </table>
-    </test>
+    </table-rows>
   `, {
     rows: ['one', 'two', 'three']
   })
