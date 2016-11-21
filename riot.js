@@ -11,6 +11,7 @@ function Block(block_root, tag, args) {
     expr = [],
     ifs = []
 
+
   // used on blocks.remove()
   this.root = block_root
 
@@ -88,6 +89,7 @@ function Block(block_root, tag, args) {
     }
 
     removeNode(node)
+
   })
 
 
@@ -311,13 +313,16 @@ function toValue(val) {
 function IF(node, tag, args, test) {
 
   node.removeAttribute('if')
+  var mounted
 
   // invisible marker node
   var stub = insertBefore(node, emptyNode()),
     t = tag.__
 
   this.update = function() {
-    return test() ? mount() : unmount()
+    var flag = !!test()
+    if (flag !== mounted) flag ? mount() : unmount()
+    mounted = flag
   }
 
   function unmount() {
@@ -370,7 +375,9 @@ function Loop(query, node, tag, args) {
   }
 
   // for yielding
-  tag.__.tmpl = moveChildren(node, document.createElement('div'))
+  if (node.innerHTML && isCustom(node)) {
+    tag.__.tmpl = moveChildren(node, document.createElement('div'))
+  }
 
   function addBlock(node, obj, i) {
     tag.__.addBlock(node, args.concat([obj, i]))
@@ -538,6 +545,8 @@ function Tag(tag_name, to, opts, parent) {
     return self
   })
 
+  this.blocks = blocks
+
   // for private use only
   var private = define('__', {
 
@@ -550,8 +559,10 @@ function Tag(tag_name, to, opts, parent) {
     },
 
     removeBlock: function(root) {
-      each(blocks, function(block, i) {
-        if (block.root == root) blocks.splice(i, 1)
+      walk(root, function(root) {
+        each(blocks, function(block, i) {
+          if (block.root == root) blocks.splice(i, 1)
+        })
       })
     },
 

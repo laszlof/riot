@@ -7,7 +7,7 @@ module.exports = function(test, assert) {
   // conditionals
   tag = test(`
     <if-attribute>
-      <b if={ hide }>void</b>
+      <b if={ hide }>c{ counter }</b>
       <inner if={ !hide }/>
       <script>
         this.counter = 0
@@ -30,7 +30,7 @@ module.exports = function(test, assert) {
   tag.update({ hide: true })
   assert.equal(tag.counter, 1)
 
-  assert.equal($('b').text(), 'void')
+  assert.equal($('b').text(), 'c1')
   assert(!$('h1'))
 
   // show -> expressions work again

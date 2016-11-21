@@ -127,20 +127,21 @@ module.exports = function(test, assert) {
   })
 
   // 1st level
-  els = tag.findAll('h1')
+  $ = tag.findAll
+  els = $('h1')
   assert.equal(els.length, 3)
   assert.equal(els[0].text(), 'v1')
   assert.equal(els[1].text(), 'v2')
 
 
   // 2nd level
-  els = tag.findAll('h2')
+  els = $('h2')
   assert.equal(els.length, 6)
   assert.equal(els[0].text(), '1-10')
   assert.equal(els[3].text(), '2-20')
 
   // 3rd level
-  els = tag.findAll('h3')
+  els = $('h3')
   assert.equal(els.length, 3)
   assert.equal(els[0].text(), '10-30')
   assert.equal(els[1].text(), '10-40')
@@ -149,11 +150,24 @@ module.exports = function(test, assert) {
   // nested loop manipulation
   items = tag.opts.items[1].arr
   items.unshift(99)
-  els = tag.findAll('h2')
+  els = $('h2')
   assert.equal(els.length, 7)
   assert.equal(els[3].text(), '2-99')
 
 
+  // push complex item
+  items.push({ el: 5, arr: [ 3, 4 ]})
+  assert.equal($('h2').length, 8)
+  assert.equal($('h3').length, 5)
+
+
+  tag.bench = function() {
+    var items = tag.opts.items
+    items.push({ el: 4 })
+    items.pop()
+    items.push({ el: 5, arr: [ 3, 4 ]})
+    items.pop()
+  }
 
   // custom tag loops
   tag = test(`
@@ -187,6 +201,16 @@ module.exports = function(test, assert) {
   assert.equal(els.length, 2)
   assert.equal(els[0].text(), 'd1')
 
+  tag.opts.items.push({ title: 'x', arr: [{ title: 'y' }, { title: 'z' }] })
+  assert.equal($('deep-nested').length, 4)
+
+
+  // bench
+  tag.bench = function() {
+    items = tag.opts.items
+    items.push({ title: 'x', arr: [{ title: 'y' }, { title: 'z' }] })
+    items.pop()
+  }
 
   // table
   tag = test(`
