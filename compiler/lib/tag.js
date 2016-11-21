@@ -2,7 +2,8 @@
 const func = require('./func'),
   dom = require('./dom')
 
-module.exports = function(tag_name, root, extra) {
+
+module.exports = function(tag_name, root, extra, opts) {
 
   const script = extra.script,
     style = extra.style,
@@ -80,13 +81,23 @@ module.exports = function(tag_name, root, extra) {
     return dom.html(root)
   }
 
-  this.generate = function() {
+  this.generate = function(debug) {
     const html = makeHTML().replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim()
 
+    if (debug) return {
+      name: tag_name,
+      script: script,
+      style: style,
+      html: html,
+      fns: fns,
+    }
+
     // this looks ugly, sorry
-    return `riot.tag('${tag_name}', '${html}',\n[${fns.join(',\n')}],` +
-      (script ? `\n\nfunction(self, opts) {\n\t${script}\n},\n` : "'',") +
-      "'" + style.trim() + "')\n"
+    var js = `riot.tag('${tag_name}', '${html}', \n[${fns.join(',\n')}], ` +
+      (script ? `\n\nfunction(self, opts) {\n${script}\n}\n` : "''")
+
+    if (style) js += ",'" + style.trim() + "'"
+    return js += ');'
   }
 
 }

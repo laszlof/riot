@@ -7,6 +7,8 @@ current: test
 test: node-riot
 	@ node test
 
+test-compiler:
+	@ node compiler/test
 
 # Node version of Riot for testing
 node-riot:

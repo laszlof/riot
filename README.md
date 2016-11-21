@@ -89,6 +89,9 @@ Due to following changes (on the tag syntax) a new major version number is requi
 
 6. Yield selection happens with named elements. The `to` and `from` attributes are not supported.
 
+7. The loop variable is required for loops. ie: `{ item in items }` and loop creates no extra "ghost" context.
+
+
 
 ## Questions
 

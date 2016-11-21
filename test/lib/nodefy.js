@@ -2,7 +2,7 @@
 /* Makes Riot testable on the server */
 
 const Tokenizer = require('simple-html-tokenizer'),
-  dom = require('../../compiler/dom'),
+  dom = require('../../compiler/lib/dom'),
   SDOM = require('simple-dom'),
   document = new SDOM.Document(),
   proto = SDOM.Element.prototype

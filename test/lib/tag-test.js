@@ -1,5 +1,5 @@
 
-const dom = require('../../compiler/dom'),
+const dom = require('../../compiler/lib/dom'),
   compile = require('../../compiler'),
   riot = require('./node-riot')
 

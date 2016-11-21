@@ -1,38 +1,12 @@
 
 // libs
-const scopedCSS = require('./scoped'),
-  binded = require('./bind'),
-  Tag = require('./tag'),
-  dom = require('./dom')
+const scopedCSS = require('./lib/scoped-css'),
+  parsers = require('./lib/parsers'),
+  Tag = require('./lib/tag'),
+  dom = require('./lib/dom')
 
 // RE
-const ATTR_EXPR = /([\w\-]+=)(\{[^}]+\})([\s>])/g,
-  TAG = /<(\w+-?\w+)([^>]*)>/g,
-  LT = /<([^[a-z\/])/g
-
-
-module.exports = function(html) {
-  html = quoteExpressions(closeTags(escape(html)))
-  const doc = dom.parse(html.trim())
-
-  var ret = '', index = 0, node
-
-  while (node = doc.childNodes.item(index++)) {
-    var tag_name = (node.tagName || '').toLowerCase()
-
-    if (tag_name == 'script') {
-      ret += dom.html(node)
-
-    } else if (tag_name) {
-      var root = dom.create('div')
-      root.appendChild(node)
-      const tag = new Tag(tag_name, root, getExtras(tag_name, root))
-      ret += tag.generate()
-    }
-  }
-
-  return ret
-}
+const LT = /<([^[a-z\/])/g
 
 function escape(html) {
   return html.replace(LT, '&lt;$1')
@@ -42,21 +16,12 @@ function unescape(js) {
   return js.replace(/&lt;/g, '<').replace(/&gt;/g, '>')
 }
 
-function closeTags(html) {
-  return html.replace(TAG, function(match, name, attr) {
-    return match.replace('/>', '></' + name + '>')
-  })
+function unindent(src) {
+  const indent = src.replace('\n', '').match(/^\s+/)
+  return indent ? src.replace(RegExp('^' + indent[0], 'gm'), '') : src
 }
 
-// foo={ bar } --> foo="{ bar }"
-function quoteExpressions(html) {
-  return html.replace(ATTR_EXPR, function(match, beg, expr, end) {
-    return beg + '"' + expr.replace(/"/g, "'") + '"' + end
-  })
-}
-
-
-function getExtras(tag_name, root) {
+function getBlocks(tag_name, root, opts) {
 
   var removables = [],
     script = '',
@@ -85,8 +50,35 @@ function getExtras(tag_name, root) {
   })
 
   return {
-    script: binded(unescape(script.trim())),
-    style: style
+    style: opts.css ? opts.css(unindent(style)) : style,
+    script: opts.js(unescape(script.trim()))
   }
 
 }
+
+module.exports = function(src, opts, debug) {
+  opts = parsers(opts)
+
+  const html = escape(opts.html(unindent(src))),
+    doc = dom.parse(html.trim())
+
+  var ret = '', index = 0, node
+
+  while (node = doc.childNodes.item(index++)) {
+    var tag_name = (node.tagName || '').toLowerCase()
+
+    if (tag_name == 'script') {
+      ret += dom.html(node)
+
+    } else if (tag_name) {
+      var root = dom.create('div')
+      root.appendChild(node)
+      const tag = new Tag(tag_name, root, getBlocks(tag_name, root, opts), opts)
+      if (debug) return tag.generate(true)
+      ret += tag.generate()
+    }
+  }
+
+  return ret
+}
+
