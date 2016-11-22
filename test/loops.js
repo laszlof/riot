@@ -73,7 +73,7 @@ module.exports = function(test, assert) {
   assert.equal(els[0].text(), -1)
 
   // sort desc
-  items.sort(function(a, b) { return a < b })
+  items.sort(function(a, b) { return a < b ? 1 : -1 })
   els = $('h1')
   assert.equal(els[0].text(), 4)
   assert.equal(els[4].text(), -1)

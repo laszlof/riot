@@ -89,6 +89,7 @@ module.exports = function(test, assert) {
   `)
 
   el = tag.find('event-listeners')
+
   el.trigger('click')
   assert.equal(tag.counter, 1)
 

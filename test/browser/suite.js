@@ -39,8 +39,7 @@ function $(el) {
   }
 
   el.trigger = function(name) {
-    var e = new Event(name)
-    el.dispatchEvent(e)
+    el.dispatchEvent(new Event(name))
   }
 
   return el
@@ -49,10 +48,12 @@ function $(el) {
 
 
 function test(tag_name, opts) {
-  document.createElement(tag_name)
-
   var tag = riot.mount(tag_name, null, opts),
     root = tag.root
+
+  // setEventListener doesn't work under DocumentFragments on Safari
+  document.createElement('div').appendChild(tag.root)
+
 
   tag.name = tag_name[0].toUpperCase() + tag_name.slice(1).replace(/\-/g, ' ')
 

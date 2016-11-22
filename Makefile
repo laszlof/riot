@@ -2,16 +2,18 @@
 cli=./compiler/lib/cli.js
 riot=test/lib/node-riot.js
 
+current: browserize
 
-current: browser-test
-
-browser-test:
+# make tests work on browsers
+browserize:
 	@ node test gen
 	@ node test/lib/browserize
 
+# run server tests
 test: node-riot
 	@ node test 100
 
+# run compiler test suite
 test-compiler:
 	@ node compiler/test
 
