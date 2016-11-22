@@ -1,9 +1,13 @@
 
-cli=./compiler/cli.js
+cli=./compiler/lib/cli.js
 riot=test/lib/node-riot.js
 
 
-current: test
+current: browser-test
+
+browser-test:
+	@ node test gen
+	@ node test/lib/browserize
 
 test: node-riot
 	@ node test 100
@@ -13,14 +17,13 @@ test-compiler:
 
 # Node version of Riot for testing
 node-riot:
-	@echo "\n/* auto-generated! */\n\nwindow = {}" > $(riot)
-	@cat lib/* >> $(riot)
+	@cat lib/* > $(riot)
 	@cat test/lib/nodefy.js >> $(riot)
 
 
 # browser playground
-browser: riot
-	@ $(cli) test/browser/test.htm
+playground: riot
+	@ $(cli) test/playground/test.htm
 
 
 # compile demo application

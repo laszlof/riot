@@ -20,6 +20,10 @@ Object.defineProperty(proto, 'innerHTML', {
   }
 })
 
+function mkdom(html) {
+  return dom.parse(html).firstChild
+}
+
 proto.replaceChild = function(new_node, node) {
   insertBefore(node, new_node)
   removeNode(node)
@@ -35,8 +39,3 @@ proto.dispatchEvent = function(event) {
   fn && fn(event)
 }
 
-function mkdom(html) {
-  return dom.parse(html).firstChild
-}
-
-module.exports = riot

@@ -1,8 +1,7 @@
 
-// commonly used variables
-var $, tag
+module.exports = function(test, assert) {
 
-module.exports = function(test, assert, suite) {
+  var $, tag
 
   // expressions
   tag = test(`
@@ -21,7 +20,7 @@ module.exports = function(test, assert, suite) {
         }
       </script>
     </expressions>
-  `, { 
+  `, {
     body: '<b>a</b>',
     title: 'test'
   })
@@ -30,14 +29,12 @@ module.exports = function(test, assert, suite) {
   assert.equal($('expressions').attr('class'), 'a b')
   assert.equal($('h1').text(), 'TEST')
   assert.equal($('em').text(), 'a b c d')
-  assert.equal($('div').html(), '<b>a</b> b')
+  assert.equal($('div').innerHTML, '<b>a</b> b')
   assert.equal($('div').attr('id'), 'a test')
 
   // boolean attributes
   assert(!$('input').attributes[0])
   assert.strictEqual($('textarea').attr('disabled'), '')
-
-
 
   // try overriding update
   assert.throws(function() {

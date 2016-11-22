@@ -1,25 +1,24 @@
 
-// commonly used variables
-var $, tag
 
 module.exports = function(test, assert) {
+
+  var $, tag
 
   // conditionals
   tag = test(`
     <if-attribute>
       <b if={ hide }>c{ counter }</b>
-      <inner if={ !hide }/>
+      <inner-tag if={ !hide }/>
       <script>
         this.counter = 0
       </script>
     </if-attribute>
 
-    <inner>
+    <inner-tag>
       <h1>inner</h1>
       { parent.counter++ }
-    </inner>
+    </inner-tag>
   `)
-
 
   $ = tag.find
   assert(!$('b'))

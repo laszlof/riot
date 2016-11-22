@@ -1,21 +1,9 @@
 
 const dom = require('../../compiler/lib/dom'),
-  compile = require('../../compiler'),
+  requireTag = require('./require-tag'),
   riot = require('./node-riot')
 
 
-function requireString(src) {
-  const Module = module.constructor,
-    m = new Module()
-  m._compile(src, '')
-  return m.exports
-}
-
-function importTag(html) {
-  const def = `module.exports = function(riot) { ${compile(html)} }`
-  requireString(def)(riot)
-  return def
-}
 
 function $(el) {
   el.text = function() {
@@ -30,10 +18,6 @@ function $(el) {
 
   el.attr = function(name) {
     return el.getAttribute(name)
-  }
-
-  el.html = function() {
-    return dom.html(el)
   }
 
   el.trigger = function(name) {
@@ -60,30 +44,38 @@ function findAll(root, name) {
   return ret
 }
 
-module.exports = function(benchmark) {
+module.exports = function(benchmark, tags) {
 
   return function(html, data, debug) {
+
     const tag_name = html.trim().split(/[ >]/)[0].slice(1),
-      def = importTag(html, debug && tag_name),
-      tag = riot.mount(tag_name, null, data)
+      def = requireTag(html),
+      tag = riot.mount(tag_name, null, data),
+      root = tag.root
+
+    tags.push(def)
 
     if (debug) {
       console.info(def)
-      console.info(tag.root.innerHTML)
+      console.info(root.innerHTML)
     }
 
     tag.name = tag_name[0].toUpperCase() + tag_name.slice(1).replace(/\-/g, ' ')
 
     tag.find = function(query) {
-      return find(tag.root, query)
+      return find(root, query)
     }
 
     tag.findAll = function(query) {
-      return findAll(tag.root, query)
+      return findAll(root, query)
+    }
+
+    function trim(str) {
+      return str.trim().replace(/\s{2,}/g, ' ').replace(/>\s+</g, '><')
     }
 
     tag.equals = function(html) {
-      var layout = tag.root.innerHTML
+      var layout = root.innerHTML
       if (trim(layout) != trim(html)) throw layout + '\n\n!=\n\n' + html
     }
 
@@ -94,7 +86,4 @@ module.exports = function(benchmark) {
 
 }
 
-function trim(str) {
-  return str.trim().replace(/\s{2,}/g, ' ').replace(/>\s+</g, '><')
-}
 

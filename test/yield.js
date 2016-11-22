@@ -1,31 +1,29 @@
 
-// commonly used variables
-var $, tag
-
 module.exports = function(test, assert) {
 
+  var $, tag
 
   // yield
   tag = test(`
     <yield-test>
-      <child id="girl">
+      <yielded id="girl">
         <h2>{ title }</h2>
         <span>{ opts.val }</span>
         <b each={ num in arr }>n{ num }</b>
-      </child>
+      </yielded>
       <script>
         this.title = 'test'
         this.arr = [1, 2, 3]
       </script>
     </yield-test>
 
-    <child>
+    <yielded>
       <h1>{ title }{ opts.id }</h1>
       <yield/>
       <script>
         this.title = 'child'
       </script>
-    </child>
+    </yielded>
 
   `, { val: 'v1' })
 
@@ -65,18 +63,18 @@ module.exports = function(test, assert) {
 
   `, { body: 'Content' })
 
-  tag.equals(`
-    <some-tag>
-      <header>
-        <h1>Title</h1>
-      </header>
-      <main>
-        <section>
-          <p>Content</p>
-        </section>
-      </main>
-    </some-tag>
-  `)
+  tag.equals('\
+    <some-tag>\
+      <header>\
+        <h1>Title</h1>\
+      </header>\
+      <main>\
+        <section>\
+          <p>Content</p>\
+        </section>\
+      </main>\
+    </some-tag>\
+  ')
 
 
   // yield with loops
@@ -103,19 +101,10 @@ module.exports = function(test, assert) {
 
   `)
 
-  tag.equals(`
-    <child>
-      <h1>i-a</h1>
-      <h2>p1</h2>
-      <p>p2</p>
-    </child>
-
-    <child>
-      <h1>i-b</h1>
-      <h2>p1</h2>
-      <p>p2</p>
-    </child>
-  `)
+  tag.equals(
+    '<child> <h1>i-a</h1> <h2>p1</h2> <p>p2</p> </child>' +
+    '<child> <h1>i-b</h1> <h2>p1</h2> <p>p2</p> </child>'
+  )
 
   // parent click
   $ = tag.find

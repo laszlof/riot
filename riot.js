@@ -437,6 +437,12 @@ function Loop(query, node, tag, args) {
     items.remove = function(obj) {
       var i = items.indexOf(obj)
       if (i >= 0) return items.splice(i, 1)
+      return obj
+    }
+
+    items.pop = function() {
+      var obj = items.slice(-1)[0]
+      return items.remove(obj)
     }
 
     // sort
@@ -472,7 +478,7 @@ function Loop(query, node, tag, args) {
 
 
 // window.riot
-var riot = window.riot = {},
+var riot = {},
   all_tags = [],
   defs = {}
 
@@ -502,7 +508,11 @@ riot.update = function() {
   })
 }
 
-
+if (typeof window == 'object') {
+  window.riot = riot
+} else {
+  module.exports = riot
+}
 
 
 // Custom tag
