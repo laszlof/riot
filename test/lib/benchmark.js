@@ -1,5 +1,5 @@
 
-module.exports = function(size) {
+function benchmark(size) {
 
   var self = { tags: [] }
 
@@ -17,13 +17,15 @@ module.exports = function(size) {
 
       for (var i = 0; i < size; i++) fn()
       var time = Date.now() - start
-      console.info(`   ${ name }${spaces} ${ time }ms`)
+      console.log(`  ${ name }${spaces} ${ time }ms`)
       total += time
     })
 
-    console.info(`\nTotal ${ total }ms`)
+    console.info(`Total ${ total }ms`)
   }
 
   return self
 
 }
+
+if (typeof module == 'object') module.exports = benchmark

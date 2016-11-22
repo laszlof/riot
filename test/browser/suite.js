@@ -1,5 +1,6 @@
 
-var suite = []
+var bench = benchmark(50),
+  suite = []
 
 function assert(el) {
   if (!el) throw el + '== false'
@@ -45,11 +46,15 @@ function $(el) {
   return el
 }
 
+
+
 function test(tag_name, opts) {
   document.createElement(tag_name)
 
   var tag = riot.mount(tag_name, null, opts),
     root = tag.root
+
+  tag.name = tag_name[0].toUpperCase() + tag_name.slice(1).replace(/\-/g, ' ')
 
   tag.find = function(query) {
     return $(root.parentNode.querySelector(query))
@@ -68,6 +73,8 @@ function test(tag_name, opts) {
     if (trim(layout) != trim(html)) throw layout + '\n\n!=\n\n' + html
   }
 
+  bench.tags.push(tag)
+
   return tag
 }
 
@@ -79,4 +86,6 @@ suite.run = function() {
   var title = 'All passed in ' + (Date.now() - start) + 'ms\n'
   document.title = title
   console.info(title)
+
+  bench.run()
 }
