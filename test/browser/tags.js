@@ -27,9 +27,9 @@ this.title = opts.title
 }
 );
 
-riot.tag('root-attributes', '<root-attributes class="$0"> <inner class="z" id="zoo" baz="goo"></inner></root-attributes>', 
+riot.tag('root-attributes', '<root-attributes type="$0"> <inner type="z" id="zoo" baz="goo"></inner></root-attributes>', 
 [function(){return { a: true }}], '');riot.tag('inner', '<inner class="$0" id="$1" data-id="$2"> <h1>Title</h1> </inner>', 
-[function(){return [{ a: 1, b: 1 }," ", this.opts.class ]},
+[function(){return [{ a: 1, b: 1 }," ", this.opts.type ]},
 function(){return this.opts.id || this.id},
 function(){return this.id}], 
 

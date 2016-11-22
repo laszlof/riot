@@ -17,7 +17,7 @@ module.exports = function(test, assert) {
     items: {
       a: { desc: 'desc1', arr: [0, 1, 2, 3] },
       b: { desc: 'desc2', arr: [4, 5, 6] },
-      c: { desc: 'desc3', arr: [7, 8] },
+      c: { desc: 'desc3', arr: [7, 8] }
     }
   })
 

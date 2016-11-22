@@ -1,4 +1,5 @@
 
+// TODO: move to compiler (riot.require())
 var compile = require('../../compiler'),
   riot = require('./node-riot')
 

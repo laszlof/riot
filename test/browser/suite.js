@@ -1,4 +1,6 @@
 
+/* Browser test suite (tags.js & tests.js are auto-generated) */
+
 var bench = benchmark(50),
   suite = []
 
@@ -39,7 +41,15 @@ function $(el) {
   }
 
   el.trigger = function(name) {
-    el.dispatchEvent(new Event(name))
+    var e
+    try {
+      e = new Event(name)
+
+    } catch (err) {
+      e = document.createEvent('CustomEvent')
+      e.initEvent(name, true, true)
+    }
+    el.dispatchEvent(e)
   }
 
   return el

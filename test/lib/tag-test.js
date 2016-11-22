@@ -1,9 +1,8 @@
 
+/* Helper for testing a single tag  */
 const dom = require('../../compiler/lib/dom'),
   requireTag = require('./require-tag'),
   riot = require('./node-riot')
-
-
 
 function $(el) {
   el.text = function() {

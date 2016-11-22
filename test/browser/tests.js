@@ -34,7 +34,7 @@ suite.push(function(test, assert) {
   $ = tag.find
   var el = $('inner')
 
-  assert.equal($('root-attributes').attr('class'), 'a')
+  assert.equal($('root-attributes').attr('type'), 'a')
   assert.equal(el.attr('class'), 'a b z')
   assert.equal(el.attr('data-id'), 'test')
   assert.equal(el.attr('id'), 'zoo')
@@ -103,7 +103,7 @@ suite.push(function(test, assert) {
     items: {
       a: { desc: 'desc1', arr: [0, 1, 2, 3] },
       b: { desc: 'desc2', arr: [4, 5, 6] },
-      c: { desc: 'desc3', arr: [7, 8] },
+      c: { desc: 'desc3', arr: [7, 8] }
     }
   })
 

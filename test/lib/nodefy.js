@@ -1,5 +1,5 @@
 
-/* Makes Riot testable on the server */
+/* Makes Riot work on Node (assigns document, etc...) */
 
 const Tokenizer = require('simple-html-tokenizer'),
   dom = require('../../compiler/lib/dom'),
