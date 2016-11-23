@@ -3,36 +3,6 @@ module.exports = function(test, assert) {
 
   var $, tag, items
 
-  // object loop
-  tag = test(`
-    <object-loop>
-      <div each={ key, obj in opts.items }>
-        <h1>{ key }</h1>
-        <p>{ obj.desc }</p>
-        <b each={ el in obj.arr }>b{ el }</b>
-      </div>
-    </object-loop>
-
-  `, {
-    items: {
-      a: { desc: 'desc1', arr: [0, 1, 2, 3] },
-      b: { desc: 'desc2', arr: [4, 5, 6] },
-      c: { desc: 'desc3', arr: [7, 8] }
-    }
-  })
-
-
-  $ = tag.findAll
-  assert.equal($('h1').length, 3)
-  assert.equal($('h1')[0].text(), 'a')
-  assert.equal($('p')[1].text(), 'desc2')
-  assert.equal($('b').length, 9)
-  assert.equal($('b')[4].text(), 'b4')
-
-  tag.opts.items.c.arr.push(9)
-  assert.equal($('b').length, 10)
-
-
   // loop manipulation
   tag = test(`
     <loop-edit>
@@ -209,6 +179,62 @@ module.exports = function(test, assert) {
     items.push({ title: 'x', arr: [{ title: 'y' }, { title: 'z' }] })
     items.pop()
   }
+
+
+  // object loop
+  tag = test(`
+    <object-loop>
+      <div each={ key, obj in opts.items }>
+        <h1>{ key }</h1>
+        <p>{ obj.desc }</p>
+        <b each={ el in obj.arr }>b{ el }</b>
+      </div>
+    </object-loop>
+
+  `, {
+    items: {
+      a: { desc: 'desc1', arr: [0, 1, 2, 3] },
+      b: { desc: 'desc2', arr: [4, 5, 6] },
+      c: { desc: 'desc3', arr: [7, 8] }
+    }
+  })
+
+
+  $ = tag.findAll
+  assert.equal($('h1').length, 3)
+  assert.equal($('h1')[0].text(), 'a')
+  assert.equal($('p')[1].text(), 'desc2')
+  assert.equal($('b').length, 9)
+  assert.equal($('b')[4].text(), 'b4')
+
+  tag.opts.items.c.arr.push(9)
+  assert.equal($('b').length, 10)
+
+  // nested object loops
+  tag = test(`
+    <nested-objects>
+      <h1>{ items.first.a.foo }</h1>
+
+      <nav each={ key, obj in items.first }>
+        <h4>{ key }</h4>
+        <a each={ name, val in obj }>{ name }{ val }</a>
+      </nav>
+
+      <script>
+        this.items = { first: { a: { foo: 'bar' } } }
+      </script>
+
+    </nested-objects>
+
+  `)
+
+  $ = tag.find
+  assert.equal($('h1').text(), 'bar')
+  assert.equal($('h4').text(), 'a')
+  assert.equal($('a').text(), 'foobar')
+
+
+
 
   // table
   tag = test(`

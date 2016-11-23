@@ -8,9 +8,9 @@ const tags = [],
 
 
 require('./basics')(test, assert)
-// require('./conditionals')(test, assert)
-// require('./yield')(test, assert)
-// require('./loops')(test, assert)
+require('./conditionals')(test, assert)
+require('./yield')(test, assert)
+require('./loops')(test, assert)
 
 console.info(`All tests passed in ${Date.now() - start}ms\n`)
 

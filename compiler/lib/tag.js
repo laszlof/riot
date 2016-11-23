@@ -66,6 +66,8 @@ module.exports = function(tag_name, root, extra, opts) {
       if (each_args) {
         loop_args[level] = each_args
         loop_args.splice(level + 1, loop_args.length)
+      } else {
+        loop_args.splice(level, loop_args.length)
       }
 
       // other attributes
