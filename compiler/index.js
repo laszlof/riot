@@ -6,14 +6,17 @@ const scopedCSS = require('./lib/scoped-css'),
   dom = require('./lib/dom')
 
 // RE
-const LT = /<([^[a-z\/])/g
+const LT = /<([^[a-z\/])/g,
+  LT2 = /(["'])</g
 
 function escape(html) {
-  return html.replace(LT, '&lt;$1')
+  return html.replace(LT, '&lt;$1').replace(LT2, '$1&lt;')
 }
 
 function unescape(js) {
-  return js.replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+  return js.replace(/&lt;|&gt;|&amp;/g, function(match) {
+    return { '&lt;': '<', '&gt;': '>', '&amp;': '&' }[match]
+  })
 }
 
 function unindent(src) {
@@ -68,8 +71,9 @@ function getBlocks(tag_name, root, opts) {
 module.exports = function(src, opts, debug) {
   opts = parsers(opts)
 
-  const html = escape(opts.html(unindent(src))),
-    doc = dom.parse(html.trim())
+  const html = escape(opts.html(unindent(src)))
+  // console.info(html)
+  const doc = dom.parse(html.trim())
 
   var ret = '', index = 0, node
 
@@ -78,7 +82,7 @@ module.exports = function(src, opts, debug) {
 
     // script outside tag definitions
     if (tag_name == 'script') {
-      ret += dom.html(node)
+      ret += unescape(dom.html(node))
 
     } else if (tag_name) {
       var root = dom.create('div')

@@ -4,7 +4,7 @@
   "bin": "compiler/cli",
   "version": "0.0.1",
   "license": "MIT",
-  "main": "riot",
+  "main": "compiler",
 
   "directories": {
     "lib": "lib"

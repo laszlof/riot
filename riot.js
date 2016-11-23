@@ -23,7 +23,7 @@ function Block(block_root, tag, args) {
 
 
     // if
-    var test = getFunction(attr.if)
+    var test = getFunction(attr['if'])
 
     if (test) {
       ifs.push(new IF(node, tag, args, function() {
@@ -552,6 +552,9 @@ function Tag(tag_name, to, opts, parent) {
       block.update()
     })
 
+    var fn = self.onupdate
+    fn && fn()
+
     return self
   })
 
@@ -609,6 +612,9 @@ function Tag(tag_name, to, opts, parent) {
     } else {
       to.parentNode.replaceChild(root, to)
     }
+
+    var fn = self.onmount
+    fn && fn()
 
   }
 

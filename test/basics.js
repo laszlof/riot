@@ -113,6 +113,8 @@ module.exports = function(test, assert) {
 
   `, { items: [1, 2] })
 
+
+
   assert.equal(tag.tags.child1.length, 4)
   assert.equal(typeof tag.tags.child2.update, 'function')
 

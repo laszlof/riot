@@ -2,6 +2,17 @@
 const compile = require('..'),
   assert = require('assert')
 
+// special characters
+var tag = compile(`
+  <test>
+    <script>
+      $(".wrap < *"); $("<a>").click(); 1 < 2 && true
+    </script>
+  </test>
+`, null, true)
+
+assert.equal(tag.script, '$(".wrap < *"); $("<a>").click(); 1 < 2 && true')
+
 
 // no parser
 var tag = compile('<yo>{ title }</yo>', null, true)
@@ -18,7 +29,7 @@ assert.equal(tag.script, 'foobar')
 // sass
 tag = compile(`
   <test>
-    <style scoped>
+    <style>
       a
         color: red
     </style>
@@ -37,7 +48,7 @@ tag = compile(`
   </test>
 `, null, true)
 
-assert.equal(tag.style, 'a { color: red; }\n')
+assert.equal(tag.style, 'test a{ color: red; }\n')
 
 // buble
 tag = compile(`
