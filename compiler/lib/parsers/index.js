@@ -36,7 +36,10 @@ const parsers = {
 parsers.jade = parsers.pug
 
 
-module.exports = function(opts) {
+module.exports = function(global_parsers, local_opts) {
+
+  const opts = extend(extend({}, global_parsers), local_opts)
+
   for (var key in opts) {
     var parser = opts[key]
 

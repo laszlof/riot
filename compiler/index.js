@@ -24,7 +24,7 @@ function unindent(src) {
   return (indent ? src.replace(RegExp('^' + indent[0], 'gm'), '') : src).trim()
 }
 
-function getBlocks(tag_name, root, opts) {
+function getBlocks(tag_name, root, global_parsers, opts) {
 
   var removables = [],
     script = '',
@@ -33,7 +33,6 @@ function getBlocks(tag_name, root, opts) {
   function setType(type, value) {
     if (value) {
       opts[type] = value;
-      parsers(opts)
     }
   }
 
@@ -58,6 +57,7 @@ function getBlocks(tag_name, root, opts) {
     el.parentNode.removeChild(el)
   })
 
+  opts = parsers(global_parsers, opts)
   var css = opts.css ? opts.css(style) : style
 
   return {
@@ -68,31 +68,42 @@ function getBlocks(tag_name, root, opts) {
 }
 
 
-module.exports = function(src, opts, debug) {
-  opts = parsers(opts)
+module.exports = function(global_opts) {
 
-  const html = escape(opts.html(unindent(src)))
-  // console.info(html)
-  const doc = dom.parse(html.trim())
+  var self = {}
 
-  var ret = '', index = 0, node
+  self.compile = function(src, local_opts) {
 
-  while (node = doc.childNodes.item(index++)) {
-    var tag_name = (node.tagName || '').toLowerCase()
+    const opts = parsers(global_opts.parsers, local_opts),
+      html = escape(opts.html(unindent(src)))
 
-    // script outside tag definitions
-    if (tag_name == 'script') {
-      ret += unescape(dom.html(node))
 
-    } else if (tag_name) {
-      var root = dom.create('div')
-      root.appendChild(node)
-      const tag = new Tag(tag_name, root, getBlocks(tag_name, root, opts), opts)
-      if (debug) return tag.generate(true)
-      ret += tag.generate()
+    // console.info(html)
+
+    const doc = dom.parse(html.trim())
+
+    var ret = '', index = 0, node
+
+    while (node = doc.childNodes.item(index++)) {
+      var tag_name = (node.tagName || '').toLowerCase()
+
+      // script outside tag definitions
+      if (tag_name == 'script') {
+        ret += unescape(dom.html(node))
+
+      } else if (tag_name) {
+        var root = dom.create('div')
+        root.appendChild(node)
+        const tag = new Tag(tag_name, root, getBlocks(tag_name, root, global_opts.parsers, opts), global_opts)
+        if (global_opts.debug) return tag.generate(true)
+        ret += tag.generate()
+      }
     }
+
+    return ret
   }
 
-  return ret
+  return self
+
 }
 

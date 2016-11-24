@@ -1,15 +1,17 @@
 
-const func = require('./func'),
+const functions = require('./func'),
   dom = require('./dom')
 
 
 module.exports = function(tag_name, root, extra, opts) {
 
   const script = extra.script,
+    func = functions(opts),
     style = extra.style,
-    fn_index = {},
     loop_args = [],
+    fn_index = {},
     fns = []
+
 
   function pushFn(expr) {
     if (!expr || !expr.includes('{') || !expr.includes('}')) return

@@ -268,7 +268,12 @@ function mkdom(html) {
 // walk trough a DOM tree
 function walk(dom, fn) {
 
-  if (fn(dom) === false) return
+  try {
+    if (fn(dom) === false) return
+  } catch (e) {
+    console.error(e, fn, dom)
+    return false
+  }
 
   dom = dom.firstChild
 
@@ -401,6 +406,14 @@ function Loop(query, node, tag, args) {
     addBlock(node, obj, i)
   }
 
+
+  function objectLoop(obj) {
+    Object.keys(obj).forEach(function(key) {
+      var val = obj[key]
+      append(key, val)
+    })
+  }
+
   function arrayLoop(items) {
 
     // push
@@ -465,15 +478,6 @@ function Loop(query, node, tag, args) {
 
   }
 
-  function objectLoop(obj) {
-    Object.keys(obj).forEach(function(key) {
-      var val = obj[key]
-      append(key, val)
-    })
-  }
-
-  this.update()
-
 }
 
 
@@ -496,6 +500,8 @@ riot.tag = function(name, html, fns, impl, css) {
 
 // mount
 riot.mount = function(name, to, opts) {
+
+  // TODO; legacy arguments if (name.tagName) throw 'depceciated' + name + to
   var tag = new Tag(name, to, opts)
   all_tags.push(tag)
   return tag.update()
@@ -601,21 +607,18 @@ function Tag(tag_name, to, opts, parent) {
 
   // mount
   if (to) {
+    moveChildren(root, to)
 
-    // move to new parent
-    if (getTagName(to) == tag_name) {
-      moveChildren(root, to)
-      root.changed = to
-      root = to
+    // copy attributes
+    Object.keys(attributes(root)).forEach(function(name) {
+      to.setAttribute(name, root.getAttribute(name))
+    })
 
-    // replace node
-    } else {
-      to.parentNode.replaceChild(root, to)
-    }
+    root = self.root = root.changed = to
 
+    // onmount
     var fn = self.onmount
     fn && fn()
-
   }
 
 

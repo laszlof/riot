@@ -49,8 +49,8 @@ module.exports = function(benchmark, tags) {
 
     const tag_name = html.trim().split(/[ >]/)[0].slice(1),
       def = requireTag(html),
-      tag = riot.mount(tag_name, null, data),
-      root = tag.root
+      tag = riot.mount(tag_name, dom.create('div'), data),
+      root = $(tag.root)
 
     tags.push(def)
 

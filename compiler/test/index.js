@@ -1,28 +1,32 @@
 
-const compile = require('..'),
+const compiler = require('..')({ globals: ['$', 'app'], debug: true }),
+  compile = compiler.compile,
   assert = require('assert')
 
 // special characters
 var tag = compile(`
   <test>
+    { app.foo }
     <script>
       $(".wrap < *"); $("<a>").click(); 1 < 2 && true
     </script>
   </test>
-`, null, true)
+`)
 
+
+assert(!tag.fns[0].includes('this'))
 assert.equal(tag.script, '$(".wrap < *"); $("<a>").click(); 1 < 2 && true')
 
 
 // no parser
-var tag = compile('<yo>{ title }</yo>', null, true)
+var tag = compile('<yo>{ title }</yo>')
 assert.equal(tag.name, 'yo')
 assert.equal(tag.html, '<yo>$0</yo>')
 assert.equal(tag.fns[0], 'function(){return this.title}')
 
 // custom parser
 function myparser(src) { return src + 'bar' }
-tag = compile('<yo><script>foo</script></yo>', { js: myparser }, true)
+tag = compile('<yo><script>foo</script></yo>', { js: myparser })
 assert.equal(tag.script, 'foobar')
 
 
@@ -34,7 +38,7 @@ tag = compile(`
         color: red
     </style>
   </test>
-`, { css: 'sass' }, true)
+`, { css: 'sass' })
 
 assert.equal(tag.style, 'test a{ color: red; }\n')
 
@@ -46,7 +50,7 @@ tag = compile(`
         color: red
     </style>
   </test>
-`, null, true)
+`)
 
 assert.equal(tag.style, 'test a{ color: red; }\n')
 
@@ -56,12 +60,12 @@ tag = compile(`
     <script>
     add = (a) => a
     </script>
-  </yo>`, { js: 'buble' }, true)
+  </yo>`, { js: 'buble' })
 
 assert.equal(tag.script, 'add = function (a) { return a; }')
 
 // script type
-tag = compile('<yo><script type="buble">add = (a) => a</script></yo>', null, true)
+tag = compile('<yo><script type="buble">add = (a) => a</script></yo>')
 assert.equal(tag.script, 'add = function (a) { return a; }')
 
 
@@ -71,13 +75,13 @@ tag = compile(`
     <script>
     var add = (a) => a
     </script>
-  </yo>`, { js: '_es6' }, true)
+  </yo>`, { js: '_es6' })
 // assert.equal(tag.script, 'add = function (a) { return a; }')
 
 
 
 // pug
-tag = compile('yo { title }', { html: 'pug' }, true)
+tag = compile('yo { title }', { html: 'pug' })
 assert.equal(tag.html, '<yo>$0</yo>')
 
 
@@ -93,7 +97,7 @@ tag = compile(`
     script.
       add = (a) => a
 
-`, { html: 'pug', js: 'buble', css: 'sass' }, true)
+`, { html: 'pug', js: 'buble', css: 'sass' })
 
 
 assert.equal(tag.name, 'test')

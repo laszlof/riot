@@ -5,12 +5,12 @@ module.exports = function(test, assert) {
 
   // expressions
   tag = test(`
-    <expressions class={ a: 1, b: true, c: false }>
+    <expressions class={ a: 1, b: true, c: false } id="test">
       <h1>{ upper(title) }</h1>
       <em>a { b: true, c: true } d</em>
       <input checked={ false }>
       <textarea disabled={ null }></textarea>
-      <div id="a { opts.title }">{{ opts.body }} b</div>
+      <section id="a { opts.title }">{{ opts.body }} b</section>
 
       <script>
         this.title = opts.title
@@ -26,11 +26,12 @@ module.exports = function(test, assert) {
   })
 
   $ = tag.find
-  assert.equal($('expressions').attr('class'), 'a b')
+  assert.equal(tag.root.attr('class'), 'a b')
+  assert.equal(tag.root.attr('id'), 'test')
   assert.equal($('h1').text(), 'TEST')
   assert.equal($('em').text(), 'a b c d')
-  assert.equal($('div').innerHTML, '<b>a</b> b')
-  assert.equal($('div').attr('id'), 'a test')
+  assert.equal($('section').innerHTML, '<b>a</b> b')
+  assert.equal($('section').attr('id'), 'a test')
 
   // boolean attributes
   assert(!$('input').attributes[0])
@@ -61,7 +62,7 @@ module.exports = function(test, assert) {
   $ = tag.find
   var el = $('inner')
 
-  assert.equal($('root-attributes').attr('type'), 'a')
+  assert.equal(tag.root.attr('type'), 'a')
   assert.equal(el.attr('class'), 'a b z')
   assert.equal(el.attr('data-id'), 'test')
   assert.equal(el.attr('id'), 'zoo')
@@ -69,8 +70,11 @@ module.exports = function(test, assert) {
 
   // event listeners
   tag = test(`
-    <event-listeners onclick={ incr } onmouseup={ add(counter + 2, 'test') }>
-      <h1>{ title }</h1>
+    <event-listeners>
+
+      <section onclick={ incr } onmouseup={ add(counter + 2, 'test') }>
+        <h1>{ title }</h1>
+      </section>
 
       <script>
         this.counter = 0
@@ -88,7 +92,7 @@ module.exports = function(test, assert) {
     </event-listeners>
   `)
 
-  el = tag.find('event-listeners')
+  el = tag.find('section')
 
   el.trigger('click')
   assert.equal(tag.counter, 1)
