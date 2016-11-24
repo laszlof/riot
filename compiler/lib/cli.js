@@ -8,7 +8,7 @@ if (args.length < 3 || args[2] == '-h') {
   return console.info('\nUSAGE:\n\nriot src/todo.htm [dest]\n\n')
 }
 
-var compile = require('..'),
+var compile = require('..')(),
   fs = require('fs'),
   src = args[2],
   html

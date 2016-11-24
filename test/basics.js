@@ -1,7 +1,7 @@
 
 module.exports = function(test, assert) {
 
-  var $, tag
+  var $, tag, el
 
   // expressions
   tag = test(`
@@ -60,7 +60,7 @@ module.exports = function(test, assert) {
 
 
   $ = tag.find
-  var el = $('inner')
+  el = $('inner')
 
   assert.equal(tag.root.attr('type'), 'a')
   assert.equal(el.attr('class'), 'a b z')
@@ -124,6 +124,28 @@ module.exports = function(test, assert) {
 
   assert.equal(tag.refs.b.length, 2)
   assert.equal(tag.refs.a.nodeType, 1)
+
+
+  // parent option passing
+  tag = test(`
+    <option-passing>
+      <child-data data={ data } zap={ a } foo="bar"/>
+      <script>
+        this.a = 'lad'
+        this.data = { a: 10 }
+      </script>
+    </option-passing>
+
+    <child-data>
+      <h1>{ opts.data.a } { opts.foo } { opts.zap }</h1>
+    </child-data>
+  `)
+
+  el = tag.find('h1')
+  assert.equal(el.text(), '10 bar lad')
+
+  tag.update({ a: 'boy', data: { a: 101 } })
+  assert.equal(el.text(), '101 bar boy')
 
 
 }

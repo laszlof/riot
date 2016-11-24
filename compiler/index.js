@@ -70,6 +70,8 @@ function getBlocks(tag_name, root, global_parsers, opts) {
 
 module.exports = function(global_opts) {
 
+  global_opts = global_opts || {}
+
   var self = {}
 
   self.compile = function(src, local_opts) {

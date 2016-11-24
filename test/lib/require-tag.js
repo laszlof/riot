@@ -1,6 +1,6 @@
 
 // TODO: move to compiler (riot.require())
-var compile = require('../../compiler'),
+var compiler = require('../..')(),
   riot = require('./node-riot')
 
 function requireString(src) {
@@ -11,7 +11,7 @@ function requireString(src) {
 }
 
 module.exports = function(html) {
-  const def = compile(html)
+  const def = compiler.compile(html)
   requireString(`module.exports = function(riot) { ${def} }`)(riot)
   return def
 }
