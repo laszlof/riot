@@ -45,7 +45,7 @@ function Block(block_root, tag, args) {
 
     // custom tag
     if (node != tag.root && isCustom(node)) {
-      var instance = new Tag(tag_name, node, getOpts(node, attr), tag)
+      var instance = new Tag(tag_name, node, new UpdatingOpts(node, attr), tag)
       _tag.addChild(tag_name, instance)
       tags.push(instance)
       return false
@@ -67,7 +67,7 @@ function Block(block_root, tag, args) {
     return new Loop(arr[0], arr[1], tag, args)
   })
 
-  function addBlock(node) {
+  function addNode(node) {
     tag.parent.__.addBlock(node)
   }
 
@@ -81,10 +81,10 @@ function Block(block_root, tag, args) {
       var child = findNode(root, name)
       child.removeAttribute('name')
       insertBefore(node, child)
-      addBlock(child)
+      addNode(child)
 
     } else {
-      insertNodes(tmpl ? root : root.firstChild.nextSibling, node, addBlock)
+      insertNodes(tmpl ? root : root.firstChild.nextSibling, node, addNode)
 
     }
 
@@ -146,17 +146,17 @@ function Block(block_root, tag, args) {
   }
 
 
-  function getOpts(node, attr) {
-    var opts = {}, rems = []
+  function UpdatingOpts(node, attr) {
+    var self = this
 
-    for (var name in attr) {
-      var val = attr[name]
-      var fn = getFunction(val)
-      opts[name] = fn ? fn.apply(tag, args) : val
-      fn && node.removeAttribute(name)
+    self.update = function() {
+      for (var name in attr) {
+        var val = attr[name]
+        var fn = getFunction(val)
+        self[name] = fn ? fn.apply(tag, args) : val
+        fn && node.removeAttribute(name)
+      }
     }
-
-    return opts
   }
 
 
@@ -552,6 +552,7 @@ function Tag(tag_name, to, opts, parent) {
   define('parent', parent)
 
   define('update', function(data) {
+    if (opts && opts.update) opts.update()
     if (data) extend(self, data)
 
     each(blocks, function(block) {
