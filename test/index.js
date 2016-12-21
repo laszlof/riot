@@ -7,7 +7,7 @@ const tags = [],
   start = Date.now()
 
 
-if (true) {
+if (false) {
   require('./unit')(test, assert)
 
 } else {
@@ -15,12 +15,12 @@ if (true) {
   require('./conditionals')(test, assert)
   require('./yield')(test, assert)
   require('./loops')(test, assert)
-}
 
-console.info(`All tests passed in ${Date.now() - start}ms\n`)
+  console.info(`All tests passed in ${Date.now() - start}ms\n`)
+  benchmark.run()
+}
 
 if (arg == 'gen') {
   require('fs').writeFileSync('test/browser/tags.js', tags.join('\n\n'))
 }
 
-benchmark.run()
